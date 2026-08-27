@@ -17,7 +17,7 @@ env_map = {}
 def init_map():
   for i in range(env_width):
     for j in range(env_height):
-      if random() < 1/3:
+      if random() < 1/100:
         env_map[i,j] = Organism(i,j)
       else:
         env_map[i,j] = None
@@ -86,3 +86,17 @@ def gen_obs(agent):
   return (
     blurry_north, blurry_south, blurry_east, blurry_west, northwest, north,
     northeast, west, east, southwest, south, southeast)
+
+def display_map():
+  for i in range(env_height):
+    txt = ""
+    for j in range(env_width):
+      if env_map[i,j] == None:
+        txt += " "
+      elif isinstance(env_map[i,j], Organism):
+        txt += "@"
+      else:
+        txt += "*"
+    print(txt)
+
+display_map()
