@@ -1,4 +1,5 @@
 from fit.agents.QLearner import QLearner
+from random import random
 
 env_height = 50
 env_width = 50
@@ -6,12 +7,20 @@ env_width = 50
 class Food:
   pass
 
+class Organism:
+  def __init__(self, x, y):
+    self.x = x
+    self.y = y
+
 env_map = {}
 
 def init_map():
   for i in range(env_width):
     for j in range(env_height):
-      env_map[i,j] = None
+      if random() < 1/3:
+        env_map[i,j] = Organism(i,j)
+      else:
+        env_map[i,j] = None
 
 init_map()
 
@@ -21,7 +30,7 @@ def compute_sight(agent, x_delta, y_delta):
 
   if env_map[x,y] == None:
     return " "
-  if isinstance(env_map[x,y], QLearner):
+  if isinstance(env_map[x,y], Organism):
     return "@"
   # Food
   return "*"
@@ -37,7 +46,7 @@ def compute_horizontal_blur(agent, x_delta, y_delta):
 
   i = 0
   while i < 5:
-    if isinstance(env_map[x+i,y], QLearner):
+    if isinstance(env_map[x+i,y], Organism):
       return "@"
     i += 1
 

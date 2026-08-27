@@ -1,6 +1,6 @@
 from random import random, randrange
 
-class Q_learner:
+class QLearner:
   """
   Basic Q-learning agent, see https://en.wikipedia.org/wiki/Q-learning.
   """
