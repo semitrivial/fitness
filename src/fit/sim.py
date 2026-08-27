@@ -1,24 +1,50 @@
 from fit.agents.QLearner import QLearner
-from random import random
+from random import random, sample
+import os
+from time import sleep
 
-env_height = 50
+env_height = 10
 env_width = 50
 
+#actions
+NORTH = 0
+SOUTH = 1
+EAST = 2
+WEST = 3
+EAT = 4
+REPRODUCE = 5
+actions = [NORTH, SOUTH, EAST, WEST, EAT, REPRODUCE]
+
+driver = QLearner(len(actions))
+
 class Food:
-  pass
+  def __init__(self, x, y):
+    self.x = x
+    self.y = y
+
+live_organisms = []
 
 class Organism:
   def __init__(self, x, y):
     self.x = x
     self.y = y
+    self.prev_act = None
+    self.prev_obs = None
+    live_organisms.append(self)
 
 env_map = {}
 
 def init_map():
+  for i in range(1000):
+    for j in range(1000):
+      env_map[i-500,j-500] = None
+
   for i in range(env_width):
     for j in range(env_height):
-      if random() < 1/100:
+      if random() < 1/50:
         env_map[i,j] = Organism(i,j)
+      elif random() < 1/500:
+        env_map[i,j] = Food(i,j)
       else:
         env_map[i,j] = None
 
@@ -57,13 +83,13 @@ def compute_vertical_blur(agent, x_delta, y_delta):
   y = agent.y + y_delta
   i = 0
   while i < 5:
-    if isinstance(env_map[x][y+i], Food):
+    if isinstance(env_map[x,y+i], Food):
       return "*"
     i += 1
 
   i = 0
   while i < 5:
-    if isinstance(env_map[x][y+i], QLearner):
+    if isinstance(env_map[x,y+i], QLearner):
       return "@"
     i += 1
 
@@ -91,12 +117,64 @@ def display_map():
   for i in range(env_height):
     txt = ""
     for j in range(env_width):
-      if env_map[i,j] == None:
+      if env_map[j,i] == None:
         txt += " "
-      elif isinstance(env_map[i,j], Organism):
+      elif isinstance(env_map[j,i], Organism):
         txt += "@"
       else:
         txt += "*"
     print(txt)
 
-display_map()
+
+def try_to_move(actor, act):
+  x, y = actor.x, actor.y
+
+  if act == NORTH: y += 1
+  if act == SOUTH: y -= 1
+  if act == EAST: x += 1
+  if act == WEST: x -= 1
+
+  if x >= env_width: x=0
+  if x < 0: x=env_width-1
+  if y >= env_height: y=0
+  if y < 0: y=env_height-1
+
+  if not(env_map[x,y] is None):
+    print("Bad move attempted")
+    return -1  # Penalize agent and do not allow movement
+
+  env_map[actor.x, actor.y] = None
+  env_map[x,y] = actor
+  actor.x, actor.y = x,y
+  print("Move succeeded")
+  return 0  # Reward 0, successful move
+
+
+def one_turn():
+  # Randomly choose order of action, to avoid collisions
+  actor_list = sample(live_organisms, len(live_organisms))
+
+  for actor in actor_list:
+    prev_obs = gen_obs(actor)
+    act = driver.act(prev_obs)
+    actor.prev_act = act
+    actor.prev_obs = prev_obs
+
+    if (act == EAT) or (act == REPRODUCE):
+      reward = 0
+    else:
+      reward = try_to_move(actor, act)
+
+    actor.prev_reward = reward
+
+  for actor in actor_list:
+    new_obs = gen_obs(actor)
+    driver.train(actor.prev_obs, actor.prev_act, actor.prev_reward, new_obs)
+
+for _ in range(10):
+  os.system('clear')
+  display_map()
+  print("..................")
+  one_turn()
+  sleep(1)
+

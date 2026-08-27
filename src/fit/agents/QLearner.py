@@ -4,7 +4,8 @@ class QLearner:
   """
   Basic Q-learning agent, see https://en.wikipedia.org/wiki/Q-learning.
   """
-  def __init__(self, epsilon=0.9, learning_rate=0.1, gamma=0.9, **kwags):
+  def __init__(self, n_actions, epsilon=0.9, learning_rate=0.1, gamma=0.9, **kwags):
+    self.n_actions = n_actions
     self.epsilon = epsilon
     self.learning_rate = learning_rate
     self.gamma = gamma
@@ -29,7 +30,6 @@ class QLearner:
     qtarget = r + gamma * max([qtable[o_next,actn] for actn in actions])
     qpredict = qtable[o_prev, a]
     qtable[o_prev, a] += self.learning_rate * (qtarget - qpredict)
-    self.rand_counter += 2
 
 def maybe_add_obs_to_qtable(qtable, actions, obs):
   if not((obs, 0) in qtable):
