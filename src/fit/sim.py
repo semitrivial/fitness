@@ -4,14 +4,13 @@ from fit.map import env_width, env_height
 from fit.obs import gen_obs
 from fit.actions import try_to_reproduce, try_to_eat, try_to_move, action_list
 from fit.actions import handle_action, modify_ancestor_count
-from fit.classes import Organism, Food, live_organisms
+from fit.classes import Organism, Food, live_organisms, players
 
 from random import random, sample
 import os
 from time import sleep
 
 driver = QLearner(len(action_list))
-
 
 def age_actor(actor):
   actor.age += 1
@@ -29,10 +28,11 @@ def age_actor(actor):
 def kill_actor(actor):
   env_map[actor.x, actor.y] = None
   modify_ancestor_count(actor, delta=-1, already_checked_set=set())
+  live_organisms.remove(actor)
 
 def one_turn():
   # Randomly choose order of action, to avoid collisions
-  actor_list = sample(live_organisms, len(live_organisms))
+  actor_list = sample(list(live_organisms), len(live_organisms))
 
   for actor in actor_list:
     age_actor(actor)
@@ -50,6 +50,32 @@ def one_turn():
   for actor in actor_list:
     new_obs = gen_obs(actor)
     driver.train(actor.prev_obs, actor.prev_act, actor.prev_reward, new_obs)
+
+  update_winners_and_losers()
+
+def update_winners_and_losers():
+  already_checked_set = set()
+
+  for x in live_organisms:
+    update_winners_losers_recurse(x, already_checked_set)
+
+def update_winners_losers_recurse(x, already_checked_set):
+  if x in already_checked_set:
+    return
+
+  already_checked_set.add(x)
+
+  if x.isWinner:
+    return
+
+  if x.num_live_descendants == 0 and not(x in live_organisms):
+    x.isLoser = True
+
+  if x.num_live_descendants == len(live_organisms):
+    x.isWinner = True
+
+  for parent in x.parents:
+    update_winners_losers_recurse(parent, already_checked_set)
 
 for _ in range(1000):
   os.system('clear')

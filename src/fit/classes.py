@@ -1,4 +1,7 @@
-live_organisms = []
+live_organisms = set()
+
+# Players are organisms which are not yet winners or losers
+players = set()
 
 class Food:
   def __init__(self, x, y):
@@ -18,4 +21,7 @@ class Organism:
     self.isWinner = False
     self.isLoser = False
     self.num_live_descendants = 0
-    live_organisms.append(self)
+    live_organisms.add(self)
+    players.add(self)
+
+

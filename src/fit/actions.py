@@ -1,5 +1,5 @@
 from fit.map import adjacent_deltas, env_width, env_height, env_map
-from fit.classes import Organism, Food
+from fit.classes import Organism, Food, live_organisms
 
 from random import random
 
@@ -36,6 +36,7 @@ def try_to_reproduce(actor):
     return -1
 
   child = Organism(*empty, [actor, partner])
+  live_organisms.add(child)
   env_map[empty] = child
 
   modify_ancestor_count(child, delta=1, already_checked_set=set())
