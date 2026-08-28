@@ -35,6 +35,7 @@ class Organism:
     self.hp = 10
     self.prev_act = None
     self.prev_obs = None
+    self.age = 0
     live_organisms.append(self)
 
 env_map = {}
@@ -200,11 +201,22 @@ def repopulate_food():
           if random() < 1/75:
             env_map[i,j] = Food(i,j)
 
+def age_actor(actor):
+  actor.age += 1
+
+  if actor.age > 100:
+    if random() < .1:
+      kill_actor(actor)
+
+def kill_actor(actor):
+  env_map[actor.x, actor.y] = None
+
 def one_turn():
   # Randomly choose order of action, to avoid collisions
   actor_list = sample(live_organisms, len(live_organisms))
 
   for actor in actor_list:
+    age_actor(actor)
     prev_obs = gen_obs(actor)
     act = driver.act(prev_obs)
     actor.prev_act = act
