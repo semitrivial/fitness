@@ -15,6 +15,10 @@ EAT = 4
 REPRODUCE = 5
 actions = [NORTH, SOUTH, EAST, WEST, EAT, REPRODUCE]
 
+adjacent_deltas = [
+  (-1,1), (0,1), (1,1), (-1,0), (1,0), (-1,-1), (0,-1), (1,-1)
+]
+
 driver = QLearner(len(actions))
 
 class Food:
@@ -141,19 +145,14 @@ def try_to_move(actor, act):
   if y < 0: y=env_height-1
 
   if not(env_map[x,y] is None):
-    print("Bad move attempted")
     return -1  # Penalize agent and do not allow movement
 
   env_map[actor.x, actor.y] = None
   env_map[x,y] = actor
   actor.x, actor.y = x,y
-  print("Move succeeded")
   return 0  # Reward 0, successful move
 
 def try_to_eat(actor):
-  adjacent_deltas = [
-    (-1,1), (0,1), (1,1), (-1,0), (1,0), (-1,-1), (0,-1), (1,-1)
-  ]
   for delta in adjacent_deltas:
     x,y = delta
     x += actor.x
@@ -165,12 +164,40 @@ def try_to_eat(actor):
 
   return -1
 
+def try_to_reproduce(actor):
+  partner = None
+  empty = None
+
+  if random()<2/3:
+    return 0
+
+  for delta in adjacent_deltas:
+    x,y = delta
+    x,y = x + actor.x, y + actor.y
+
+    if isinstance(env_map[x,y], Organism):
+      if partner is not None:
+        return -1
+      else:
+        partner = env_map[x,y]
+    elif env_map[x,y] is None:
+      empty = (x,y)
+
+  if (partner is None) or (empty is None):
+    return -1
+
+  child = Organism(*empty)
+  env_map[empty] = child
+
+  return 10
+
+
 def repopulate_food():
-  if random() < .1:
+  if random() < 1/20:
     for i in range(env_width):
       for j in range(env_height):
         if env_map[i,j] is None:
-          if random() < 1/25:
+          if random() < 1/75:
             env_map[i,j] = Food(i,j)
 
 def one_turn():
@@ -186,7 +213,7 @@ def one_turn():
     if act == EAT:
       reward = try_to_eat(actor)
     elif act == REPRODUCE:
-      reward = 0
+      reward = try_to_reproduce(actor)
     else:
       reward = try_to_move(actor, act)
 
