@@ -165,6 +165,14 @@ def try_to_eat(actor):
 
   return -1
 
+def repopulate_food():
+  if random() < .1:
+    for i in range(env_width):
+      for j in range(env_height):
+        if env_map[i,j] is None:
+          if random() < 1/25:
+            env_map[i,j] = Food(i,j)
+
 def one_turn():
   # Randomly choose order of action, to avoid collisions
   actor_list = sample(live_organisms, len(live_organisms))
@@ -183,6 +191,8 @@ def one_turn():
       reward = try_to_move(actor, act)
 
     actor.prev_reward = reward
+
+  repopulate_food()
 
   for actor in actor_list:
     new_obs = gen_obs(actor)
