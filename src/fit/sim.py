@@ -28,6 +28,7 @@ class Organism:
   def __init__(self, x, y):
     self.x = x
     self.y = y
+    self.hp = 10
     self.prev_act = None
     self.prev_obs = None
     live_organisms.append(self)
@@ -43,7 +44,7 @@ def init_map():
     for j in range(env_height):
       if random() < 1/50:
         env_map[i,j] = Organism(i,j)
-      elif random() < 1/500:
+      elif random() < 1/50:
         env_map[i,j] = Food(i,j)
       else:
         env_map[i,j] = None
@@ -149,6 +150,20 @@ def try_to_move(actor, act):
   print("Move succeeded")
   return 0  # Reward 0, successful move
 
+def try_to_eat(actor):
+  adjacent_deltas = [
+    (-1,1), (0,1), (1,1), (-1,0), (1,0), (-1,-1), (0,-1), (1,-1)
+  ]
+  for delta in adjacent_deltas:
+    x,y = delta
+    x += actor.x
+    y += actor.y
+    if isinstance(env_map[x,y], Food):
+      env_map[x,y] = None
+      actor.hp = max(10, actor.hp+1)
+      return 1
+
+  return -1
 
 def one_turn():
   # Randomly choose order of action, to avoid collisions
@@ -160,7 +175,9 @@ def one_turn():
     actor.prev_act = act
     actor.prev_obs = prev_obs
 
-    if (act == EAT) or (act == REPRODUCE):
+    if act == EAT:
+      reward = try_to_eat(actor)
+    elif act == REPRODUCE:
       reward = 0
     else:
       reward = try_to_move(actor, act)
@@ -171,10 +188,9 @@ def one_turn():
     new_obs = gen_obs(actor)
     driver.train(actor.prev_obs, actor.prev_act, actor.prev_reward, new_obs)
 
-for _ in range(10):
+for _ in range(1000):
   os.system('clear')
   display_map()
-  print("..................")
   one_turn()
-  sleep(1)
+  sleep(.01)
 
