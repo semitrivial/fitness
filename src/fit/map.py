@@ -18,7 +18,7 @@ def init_map():
   for i in range(env_width):
     for j in range(env_height):
       if random() < 1/50:
-        env_map[i,j] = Organism(i,j)
+        env_map[i,j] = Organism(i,j,[])
       elif random() < 1/50:
         env_map[i,j] = Food(i,j)
       else:
