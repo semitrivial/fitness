@@ -17,5 +17,5 @@ class Organism:
     self.age = 0
     self.isWinner = False
     self.isLoser = False
-    self.num_descendants = 0
+    self.num_live_descendants = 0
     live_organisms.append(self)

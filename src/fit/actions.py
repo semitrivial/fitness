@@ -38,11 +38,11 @@ def try_to_reproduce(actor):
   child = Organism(*empty, [actor, partner])
   env_map[empty] = child
 
-  update_ancestor_count(child, already_checked_set=set())
+  modify_ancestor_count(child, delta=1, already_checked_set=set())
 
   return 10
 
-def update_ancestor_count(x, already_checked_set):
+def modify_ancestor_count(x, delta, already_checked_set):
   for parent in x.parents:
     if parent in already_checked_set:
       return
@@ -50,8 +50,8 @@ def update_ancestor_count(x, already_checked_set):
     if parent.isWinner:
       return
 
-    parent.num_descendants += 1
-    update_ancestor_count(parent, already_checked_set)
+    parent.num_live_descendants += 1
+    modify_ancestor_count(parent, delta, already_checked_set)
 
 def try_to_eat(actor):
   for delta in adjacent_deltas:

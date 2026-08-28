@@ -3,7 +3,7 @@ from fit.map import adjacent_deltas, env_map, display_map, repopulate_food
 from fit.map import env_width, env_height
 from fit.obs import gen_obs
 from fit.actions import try_to_reproduce, try_to_eat, try_to_move, action_list
-from fit.actions import handle_action
+from fit.actions import handle_action, modify_ancestor_count
 from fit.classes import Organism, Food, live_organisms
 
 from random import random, sample
@@ -28,6 +28,7 @@ def age_actor(actor):
 
 def kill_actor(actor):
   env_map[actor.x, actor.y] = None
+  modify_ancestor_count(actor, delta=-1, already_checked_set=set())
 
 def one_turn():
   # Randomly choose order of action, to avoid collisions
