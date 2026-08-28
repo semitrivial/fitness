@@ -1,6 +1,12 @@
+from random import random
+from fit.classes import Organism, Food
+
 adjacent_deltas = [
   (-1,1), (0,1), (1,1), (-1,0), (1,0), (-1,-1), (0,-1), (1,-1)
 ]
+
+env_height = 10
+env_width = 50
 
 env_map = {}
 

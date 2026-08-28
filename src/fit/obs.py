@@ -1,3 +1,7 @@
+from fit.classes import Organism, Food
+from fit.map import env_map
+
+
 def compute_sight(agent, x_delta, y_delta):
   x = agent.x + x_delta
   y = agent.y + y_delta
@@ -37,7 +41,7 @@ def compute_vertical_blur(agent, x_delta, y_delta):
 
   i = 0
   while i < 5:
-    if isinstance(env_map[x,y+i], QLearner):
+    if isinstance(env_map[x,y+i], Organism):
       return "@"
     i += 1
 

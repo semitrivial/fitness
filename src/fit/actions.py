@@ -1,4 +1,17 @@
-from fit.map import adjacent_deltas
+from fit.map import adjacent_deltas, env_width, env_height, env_map
+from fit.classes import Organism, Food
+
+from random import random
+
+#actions
+NORTH = 0
+SOUTH = 1
+EAST = 2
+WEST = 3
+EAT = 4
+REPRODUCE = 5
+action_list = [NORTH, SOUTH, EAST, WEST, EAT, REPRODUCE]
+
 
 def try_to_reproduce(actor):
   partner = None
@@ -60,3 +73,13 @@ def try_to_move(actor, act):
   env_map[x,y] = actor
   actor.x, actor.y = x,y
   return 0  # Reward 0, successful move
+
+def handle_action(actor, act):
+  if act == EAT:
+    reward = try_to_eat(actor)
+  elif act == REPRODUCE:
+    reward = try_to_reproduce(actor)
+  else:
+    reward = try_to_move(actor, act)
+
+  return reward

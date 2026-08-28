@@ -1,43 +1,16 @@
 from fit.agents.QLearner import QLearner
 from fit.map import adjacent_deltas, env_map, display_map, repopulate_food
+from fit.map import env_width, env_height
 from fit.obs import gen_obs
-from fit.actions import try_to_reproduce, try_to_eat, try_to_move
+from fit.actions import try_to_reproduce, try_to_eat, try_to_move, action_list
+from fit.actions import handle_action
+from fit.classes import Organism, Food, live_organisms
 
 from random import random, sample
 import os
 from time import sleep
 
-env_height = 10
-env_width = 50
-
-#actions
-NORTH = 0
-SOUTH = 1
-EAST = 2
-WEST = 3
-EAT = 4
-REPRODUCE = 5
-actions = [NORTH, SOUTH, EAST, WEST, EAT, REPRODUCE]
-
-driver = QLearner(len(actions))
-
-class Food:
-  def __init__(self, x, y):
-    self.x = x
-    self.y = y
-
-live_organisms = []
-
-class Organism:
-  def __init__(self, x, y):
-    self.x = x
-    self.y = y
-    self.hp = 10
-    self.satiety = 100
-    self.prev_act = None
-    self.prev_obs = None
-    self.age = 0
-    live_organisms.append(self)
+driver = QLearner(len(action_list))
 
 
 def age_actor(actor):
@@ -67,12 +40,7 @@ def one_turn():
     actor.prev_act = act
     actor.prev_obs = prev_obs
 
-    if act == EAT:
-      reward = try_to_eat(actor)
-    elif act == REPRODUCE:
-      reward = try_to_reproduce(actor)
-    else:
-      reward = try_to_move(actor, act)
+    reward = handle_action(actor, act)
 
     actor.prev_reward = reward
 
