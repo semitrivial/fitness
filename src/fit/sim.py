@@ -29,6 +29,7 @@ def kill_actor(actor):
   env_map[actor.x, actor.y] = None
   modify_ancestor_count(actor, delta=-1, already_checked_set=set())
   live_organisms.remove(actor)
+  actor.isDead = True
 
 def one_turn():
   # Randomly choose order of action, to avoid collisions
@@ -36,6 +37,10 @@ def one_turn():
 
   for actor in actor_list:
     age_actor(actor)
+
+    if actor.isDead:
+      continue
+
     prev_obs = gen_obs(actor)
     act = driver.act(prev_obs)
     actor.prev_act = act
@@ -77,9 +82,10 @@ def update_winners_losers_recurse(x, already_checked_set):
   for parent in x.parents:
     update_winners_losers_recurse(parent, already_checked_set)
 
-for _ in range(1000):
+while True:
   os.system('clear')
   display_map()
   one_turn()
+  print(len(live_organisms))
   sleep(.01)
 

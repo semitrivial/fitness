@@ -20,6 +20,7 @@ class Organism:
     self.age = 0
     self.isWinner = False
     self.isLoser = False
+    self.isDead = False
     self.num_live_descendants = 0
     live_organisms.add(self)
     players.add(self)
