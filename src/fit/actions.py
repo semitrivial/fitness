@@ -37,7 +37,6 @@ def try_to_reproduce(actor):
   child = Organism(*empty, [actor, partner])
   env_map[empty] = child
 
-  print("Upping ancestor count for child=" + str(id(child)))
   modify_ancestor_count(child, delta=1, already_checked_set=set())
 
   return 10
@@ -53,6 +52,11 @@ def modify_ancestor_count(x, delta, already_checked_set):
     #   return
 
     parent.num_live_descendants += delta
+
+    if parent.num_live_descendants == 0:
+      parent.isLoser = True
+    elif parent.num_live_descendants == len(live_organisms):
+      parent.isWinner = True
 
     modify_ancestor_count(parent, delta, already_checked_set)
 
