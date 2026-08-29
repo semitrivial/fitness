@@ -70,8 +70,8 @@ def try_to_move(actor, act):
 
   if act == NORTH: y = (y+1) % env_height
   if act == SOUTH: y = (y-1) % env_height
-  if act == EAST: x = (x+1) % env_height
-  if act == WEST: x = (x-1) % env_height
+  if act == EAST: x = (x+1) % env_width
+  if act == WEST: x = (x-1) % env_width
 
   if not(env_map[x,y] is None):
     return -1  # Penalize agent and do not allow movement
