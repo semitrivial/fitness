@@ -27,8 +27,8 @@ def age_actor(actor):
 
 def kill_actor(actor):
   env_map[actor.x, actor.y] = None
-  modify_ancestor_count(actor, delta=-1, already_checked_set=set())
   live_organisms.remove(actor)
+  modify_ancestor_count(actor, delta=-1, already_checked_set=set())
   actor.isDead = True
 
 def one_turn():
