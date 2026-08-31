@@ -1,5 +1,7 @@
 from fit.map import adjacent_deltas, env_width, env_height, env_map
 from fit.classes import Organism, Food, live_organisms
+from fit.classes import FOOD_NORMAL, STERILE_FUTURE_DESCS, STERILE_ALL_DESCS
+from fit.classes import STERILE_FUTURE_DESCS_BONUS, STERILE_ALL_DESCS_BONUS
 
 from random import random
 
@@ -68,12 +70,34 @@ def try_to_eat(actor):
     x += actor.x
     y += actor.y
     if isinstance(env_map[x,y], Food):
+      food = env_map[x,y]
       env_map[x,y] = None
       actor.hp = max(10, actor.hp+1)
       actor.satiety = 100
+
+      if food.foodtype != FOOD_NORMAL:
+        actor.futureDescsSterile = True
+        if food.foodtype in [STERILE_ALL_DESCS, STERILE_ALL_DESCS_BONUS]:
+          already_checked_set = set()
+          make_all_descs_sterile(actor, already_checked_set)
+        if food.foodtype in [STERILE_FUTURE_DESCS_BONUS, STERILE_ALL_DESCS_BONUS]:
+          actor.extraFertile = True
+
       return 1
 
   return -1
+
+def make_all_descs_sterile(actor, already_checked_set):
+  for child in actor.children:
+    if child in already_checked_set:
+      continue
+
+    already_checked_set.add(child)
+    child.sterile = True
+    child.futureDescsSterile = True
+    make_all_descs_sterile(child, already_checked_set)
+
+
 
 def try_to_move(actor, act):
   x, y = actor.x, actor.y
