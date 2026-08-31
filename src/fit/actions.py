@@ -16,7 +16,7 @@ def try_to_reproduce(actor):
   partner = None
   empty = None
 
-  if random()<2/3:
+  if random()<1/3:
     return 0
 
   for delta in adjacent_deltas:
@@ -35,6 +35,8 @@ def try_to_reproduce(actor):
     return -1
 
   child = Organism(*empty, [actor, partner])
+  actor.children.add(child)
+  partner.children.add(child)
   env_map[empty] = child
 
   modify_ancestor_count(child, delta=1, already_checked_set=set())
@@ -55,7 +57,7 @@ def modify_ancestor_count(x, delta, already_checked_set):
 
     if (parent.num_live_descendants == 0) and parent.isDead:
       parent.isLoser = True
-    elif parent.num_live_descendants == len(live_organisms):
+    if parent.num_live_descendants == len(live_organisms):
       parent.isWinner = True
 
     modify_ancestor_count(parent, delta, already_checked_set)

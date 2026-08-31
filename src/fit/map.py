@@ -1,5 +1,5 @@
 from random import random
-from fit.classes import Organism, Food
+from fit.classes import Organism, Food, live_organisms
 
 adjacent_deltas = [
   (-1,1), (0,1), (1,1), (-1,0), (1,0), (-1,-1), (0,-1), (1,-1)
@@ -25,6 +25,8 @@ def init_map():
         env_map[i,j] = None
 
 init_map()
+
+original_organisms = live_organisms.copy()
 
 def display_map():
   for i in range(env_height):

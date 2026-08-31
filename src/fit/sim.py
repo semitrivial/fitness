@@ -1,10 +1,10 @@
 from fit.agents.QLearner import QLearner
 from fit.map import adjacent_deltas, env_map, display_map, repopulate_food
-from fit.map import env_width, env_height
+from fit.map import env_width, env_height, original_organisms
 from fit.obs import gen_obs
 from fit.actions import try_to_reproduce, try_to_eat, try_to_move, action_list
 from fit.actions import handle_action, modify_ancestor_count
-from fit.classes import Organism, Food, live_organisms, players
+from fit.classes import Organism, Food, live_organisms, all_organisms
 
 from random import random, sample
 import os
@@ -28,10 +28,17 @@ def age_actor(actor):
 def kill_actor(actor):
   env_map[actor.x, actor.y] = None
   live_organisms.remove(actor)
+
+  if len(live_organisms) == 0:
+    for organism in all_organisms:
+      organism.isWinner = True
+
   modify_ancestor_count(actor, delta=-1, already_checked_set=set())
   actor.isDead = True
   if actor.num_live_descendants == 0:
     actor.isLoser = True
+  if len(live_organisms) == 0:
+    actor.isWinner = True
 
 def one_turn():
   # Randomly choose order of action, to avoid collisions
@@ -89,8 +96,9 @@ while True:
   display_map()
   one_turn()
   print(len(live_organisms))
-  print("Winners: "+str(len([x for x in live_organisms if x.isWinner])))
-  print("Losers: "+str(len([x for x in live_organisms if x.isLoser])))
+  for x in original_organisms:
+    print(f"{id(x)} has {x.num_live_descendants} descs; Winner: {x.isWinner}, Loser: {x.isLoser}")
+
 
   sleep(.01)
 
