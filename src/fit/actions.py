@@ -41,6 +41,9 @@ def try_to_reproduce(actor):
   partner.children.add(child)
   env_map[empty] = child
 
+  if actor.futureDescsSterile or partner.futureDescsSterile:
+    child.sterile = True
+
   modify_ancestor_count(child, delta=1, already_checked_set=set())
 
   return 10
@@ -82,6 +85,8 @@ def try_to_eat(actor):
           make_all_descs_sterile(actor, already_checked_set)
         if food.foodtype in [STERILE_FUTURE_DESCS_BONUS, STERILE_ALL_DESCS_BONUS]:
           actor.extraFertile = True
+
+      actor.foods_eaten.add(food.foodtype)
 
       return 1
 

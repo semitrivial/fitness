@@ -5,6 +5,7 @@ from fit.obs import gen_obs
 from fit.actions import try_to_reproduce, try_to_eat, try_to_move, action_list
 from fit.actions import handle_action, modify_ancestor_count
 from fit.classes import Organism, Food, live_organisms, all_organisms
+from fit.fitness import print_fitness_scores
 
 from random import random, sample
 import os
@@ -96,9 +97,11 @@ while True:
   display_map()
   one_turn()
   print(len(live_organisms))
+
   for x in original_organisms:
     print(f"{id(x)} has {x.num_live_descendants} descs; Winner: {x.isWinner}, Loser: {x.isLoser}")
 
+  print_fitness_scores()
 
   sleep(.01)
 

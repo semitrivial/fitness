@@ -47,6 +47,7 @@ class Organism:
     self.isLoser = False
     self.isDead = False
     self.num_live_descendants = 0
+    self.foods_eaten = set()
     live_organisms.add(self)
     all_organisms.add(self)
 
