@@ -30,6 +30,8 @@ def kill_actor(actor):
   live_organisms.remove(actor)
   modify_ancestor_count(actor, delta=-1, already_checked_set=set())
   actor.isDead = True
+  if actor.num_live_descendants == 0:
+    actor.isLoser = True
 
 def one_turn():
   # Randomly choose order of action, to avoid collisions
@@ -87,5 +89,8 @@ while True:
   display_map()
   one_turn()
   print(len(live_organisms))
+  print("Winners: "+str(len([x for x in live_organisms if x.isWinner])))
+  print("Losers: "+str(len([x for x in live_organisms if x.isLoser])))
+
   sleep(.01)
 

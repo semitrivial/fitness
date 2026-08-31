@@ -53,7 +53,7 @@ def modify_ancestor_count(x, delta, already_checked_set):
 
     parent.num_live_descendants += delta
 
-    if parent.num_live_descendants == 0:
+    if (parent.num_live_descendants == 0) and parent.isDead:
       parent.isLoser = True
     elif parent.num_live_descendants == len(live_organisms):
       parent.isWinner = True
