@@ -28,6 +28,53 @@
 
 \section{Introduction}
 
+The idea that evolutionary fitness is synonymous with having more children
+is almost a cliche because it is invoked so often.
+But this naive approach does not do full justice to the nuances of fitness.
+If I give birth to a million sterile children (and no fertile children),
+then that should not make me fit whatsoever. Giving birth to one fertile child
+should confer more fitness than giving birth to any number of sterile children.
+
+We could attempt to patch the above problem by considering grandchildren
+rather than children: measure evolutionary fitness by how many grandchildren
+an organism has. But this just pushes the bubble around under the wallpaper,
+because one could theoretically have numerous sterile grandchildren (and no
+fertile grandchildren), which would also make one manifestly unfit. Delaying
+the calculation any number of generations runs into the same problem.
+
+To be clear, the problem does not merely arise in situations like ``all of this
+organism's children are sterile,'' which may seem contrived.
+The problem can arise in very realistic scenarios. For example, as noted by ...,
+organisms could inhabit an environment which very rarely suffers from heatwaves.
+If the heatwaves are rare enough, organisms could evolve to lose expensive heatwave
+resistance, which would seem (in the short term) to make them more fit.
+But then if all such mutants are killed by the next heatwave, then the
+mutation was actually unfit.
+
+Another example: naive ``fitness $=$ number of children'' examples often gloss over
+the fact that in nature, organisms can sexually reproduce with their own children.
+It is not clear whether having a child with its own child should grant the same
+amount of fitness to a fruitfly as having a child with an unrelated fruitfly mate.
+
+We address this by using the idea of identical ancestor points from
+... and ..., more recently studied by .... Motivated by the idea of identical
+ancestor points, we consider two types of organisms. We call an organism $x$ a
+\emph{winner} if, at some point in time (probably in the distant future after
+$x$'s death), all living members of $x$'s species are descended from $x$.
+We call $x$ a \emph{loser} if $x$'s descendans eventually go extinct.
+We argued ... for what we call the \emph{identical ancestor point axiom}.
+This axiom states that in any species, every organism of that species is either
+a winner or a loser, in the above sense. This offers a shockingly simple
+new way to measure the fitness of a finite set $S$ of organisms in a
+species, assuming the species satisfies the axiom. Namely: the fitness of
+$S$ is
+\[
+    \frac{\mbox{number of winners in $S$}{|S|}}.
+\]
+
+In this paper we discuss empirical results about such fitness based on
+simulations \emph{in silica}.
+
 
 \bibliographystyle{plain}
 \bibliography{bio}
