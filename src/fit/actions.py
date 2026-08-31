@@ -18,7 +18,10 @@ def try_to_reproduce(actor):
   partner = None
   empty = None
 
-  if random()<1/3:
+  if actor.sterile:
+    return 0
+
+  if random()<1/3 and not(actor.extraFertile):
     return 0
 
   for delta in adjacent_deltas:
@@ -35,6 +38,9 @@ def try_to_reproduce(actor):
 
   if (partner is None) or (empty is None):
     return -1
+
+  if partner.sterile:
+    return 0
 
   child = Organism(*empty, [actor, partner])
   actor.children.add(child)
