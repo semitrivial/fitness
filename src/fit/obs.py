@@ -48,10 +48,13 @@ def compute_vertical_blur(agent, x_delta, y_delta):
   return " "
 
 def gen_obs(agent):
-  blurry_north = compute_horizontal_blur(agent, -2, 2)
-  blurry_south = compute_horizontal_blur(agent, -2, -2)
-  blurry_east = compute_vertical_blur(agent, 2, -2)
-  blurry_west = compute_vertical_blur(agent, -2,-2)
+  if agent.isShortsighted:
+    blurry_north, blurry_south, blurry_east, blurry_west = " ", " ", " ", " "
+  else:
+    blurry_north = compute_horizontal_blur(agent, -2, 2)
+    blurry_south = compute_horizontal_blur(agent, -2, -2)
+    blurry_east = compute_vertical_blur(agent, 2, -2)
+    blurry_west = compute_vertical_blur(agent, -2,-2)
   northwest = compute_sight(agent, -1, 1)
   north = compute_sight(agent, 0, 1)
   northeast = compute_sight(agent, 1, 1)

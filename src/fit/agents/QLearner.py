@@ -23,6 +23,17 @@ class QLearner:
     else:
       return max(actions, key=lambda a: qtable[obs,a])
 
+  def insanity_act(self, obs):
+    qtable, epsilon, actions = self.qtable, self.epsilon, self.actions
+    maybe_add_obs_to_qtable(qtable, actions, obs)
+
+    if random() > epsilon:
+      return randrange(self.n_actions)
+    elif all(qtable[obs,a]==0 for a in actions):
+      return randrange(self.n_actions)
+    else:
+      return min(actions, key=lambda a: qtable[obs,a])
+
   def train(self, o_prev, a, r, o_next):
     qtable, actions, gamma = self.qtable, self.actions, self.gamma
     maybe_add_obs_to_qtable(qtable, actions, o_prev)

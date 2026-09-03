@@ -2,6 +2,7 @@ from fit.map import adjacent_deltas, env_width, env_height, env_map
 from fit.classes import Organism, Food, live_organisms
 from fit.classes import FOOD_NORMAL, STERILE_FUTURE_DESCS, STERILE_ALL_DESCS
 from fit.classes import STERILE_FUTURE_DESCS_BONUS, STERILE_ALL_DESCS_BONUS
+from fit.classes import APHRODISIAC, INSANITY, SHORTSIGHTED
 
 from random import random
 
@@ -83,12 +84,19 @@ def try_to_eat(actor):
       actor.satiety = 100
 
       if food.foodtype != FOOD_NORMAL:
-        actor.futureDescsSterile = True
         if food.foodtype in [STERILE_ALL_DESCS, STERILE_ALL_DESCS_BONUS]:
+          actor.futureDescsSterile = True
           already_checked_set = set()
           make_all_descs_sterile(actor, already_checked_set)
         if food.foodtype in [STERILE_FUTURE_DESCS_BONUS, STERILE_ALL_DESCS_BONUS]:
+          actor.futureDescsSterile = True
           actor.extraFertile = True
+        if food.foodtype == APHRODISIAC:
+          actor.extraFertile = True
+        if food.foodtype == INSANITY:
+          actor.isInsane = True
+        if food.foodtype == SHORTSIGHTED:
+          actor.isShortsighted = True
 
       actor.foods_eaten.add(food.foodtype)
 

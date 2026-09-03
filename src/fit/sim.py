@@ -52,7 +52,10 @@ def one_turn():
       continue
 
     prev_obs = gen_obs(actor)
-    act = driver.act(prev_obs)
+    if actor.isInsane:
+      act = driver.insanity_act(prev_obs)
+    else:
+      act = driver.act(prev_obs)
     actor.prev_act = act
     actor.prev_obs = prev_obs
 
@@ -97,9 +100,6 @@ while True:
   display_map()
   one_turn()
   print(len(live_organisms))
-
-  for x in original_organisms:
-    print(f"{id(x)} has {x.num_live_descendants} descs; Winner: {x.isWinner}, Loser: {x.isLoser}")
 
   print_fitness_scores()
 

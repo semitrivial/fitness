@@ -9,6 +9,9 @@ STERILE_FUTURE_DESCS = 1
 STERILE_ALL_DESCS = 2
 STERILE_FUTURE_DESCS_BONUS = 3
 STERILE_ALL_DESCS_BONUS = 4
+APHRODISIAC = 5
+INSANITY = 6
+SHORTSIGHTED = 7
 
 class Food:
   def __init__(self, x, y):
@@ -16,14 +19,20 @@ class Food:
     self.y = y
 
     rnd = random()
-    if random() < .05:
+    if rnd < .05:
       foodtype = STERILE_FUTURE_DESCS
-    elif random() < .1:
+    elif rnd < .1:
       foodtype = STERILE_ALL_DESCS
-    elif random() < .15:
+    elif rnd < .15:
       foodtype = STERILE_FUTURE_DESCS_BONUS
-    elif random() < .2:
+    elif rnd < .2:
       foodtype = STERILE_ALL_DESCS_BONUS
+    elif rnd < .25:
+      foodtype = APHRODISIAC
+    elif rnd < .3:
+      foodtype = INSANITY
+    elif rnd < .35:
+      foodtype = SHORTSIGHTED
     else:
       foodtype = FOOD_NORMAL
 
@@ -48,6 +57,8 @@ class Organism:
     self.isDead = False
     self.num_live_descendants = 0
     self.foods_eaten = set()
+    self.isShortsighted = False
+    self.isInsane = False
     live_organisms.add(self)
     all_organisms.add(self)
 

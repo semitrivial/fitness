@@ -1,16 +1,21 @@
 from fit.classes import all_organisms
 from fit.classes import FOOD_NORMAL, STERILE_FUTURE_DESCS, STERILE_ALL_DESCS
 from fit.classes import STERILE_FUTURE_DESCS_BONUS, STERILE_ALL_DESCS_BONUS
+from fit.classes import APHRODISIAC, INSANITY, SHORTSIGHTED
 
 foodtypes = [FOOD_NORMAL, STERILE_FUTURE_DESCS, STERILE_ALL_DESCS,
-  STERILE_FUTURE_DESCS_BONUS, STERILE_ALL_DESCS_BONUS]
+  STERILE_FUTURE_DESCS_BONUS, STERILE_ALL_DESCS_BONUS,
+  APHRODISIAC, INSANITY, SHORTSIGHTED]
 
 foodtype_names = {
   FOOD_NORMAL: "Normal",
   STERILE_FUTURE_DESCS: "StrlFutDescs",
   STERILE_ALL_DESCS: "StrlAllDescs",
   STERILE_FUTURE_DESCS_BONUS: "StrlFutDescsBonus",
-  STERILE_ALL_DESCS_BONUS: "StrlAllDescsBonus"
+  STERILE_ALL_DESCS_BONUS: "StrlAllDescsBonus",
+  APHRODISIAC: "FrtlBonus",
+  INSANITY: "Insanity",
+  SHORTSIGHTED: "Shortsighted"
 }
 
 def print_fitness_scores():
