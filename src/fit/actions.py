@@ -39,18 +39,16 @@ def try_to_reproduce(actor):
   if (partner is None) or (empty is None):
     return -1
 
-  if partner.sterile:
-    return 0
+  if not(partner.sterile):
+    child = Organism(*empty, [actor, partner])
+    actor.children.add(child)
+    partner.children.add(child)
+    env_map[empty] = child
 
-  child = Organism(*empty, [actor, partner])
-  actor.children.add(child)
-  partner.children.add(child)
-  env_map[empty] = child
+    if actor.futureDescsSterile or partner.futureDescsSterile:
+      child.sterile = True
 
-  if actor.futureDescsSterile or partner.futureDescsSterile:
-    child.sterile = True
-
-  modify_ancestor_count(child, delta=1, already_checked_set=set())
+    modify_ancestor_count(child, delta=1, already_checked_set=set())
 
   return 10
 
