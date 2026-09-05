@@ -22,8 +22,12 @@ def try_to_reproduce(actor):
   if actor.sterile:
     return 0
 
-  if random()<1/3 and not(actor.extraFertile):
-    return 0
+  if actor.extraFertile:
+    if random()<1/3:
+      return 0
+  else:
+    if random()<3/4:
+      return 0
 
   for delta in adjacent_deltas:
     x,y = delta
@@ -60,8 +64,8 @@ def modify_ancestor_count(x, delta, already_checked_set):
 
     already_checked_set.add(parent)
 
-    # if parent.isWinner:
-    #   return
+    if parent.isWinner:
+      return
 
     parent.num_live_descendants += delta
 

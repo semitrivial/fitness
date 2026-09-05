@@ -22,7 +22,7 @@ def age_actor(actor):
       kill_actor(actor)
       return
 
-  if actor.age > 100:
+  if actor.age > 95:
     if random() < .25:
       kill_actor(actor)
 
@@ -95,13 +95,19 @@ def update_winners_losers_recurse(x, already_checked_set):
   for parent in x.parents:
     update_winners_losers_recurse(parent, already_checked_set)
 
-while True:
-  os.system('clear')
-  display_map()
+turns = 0
+
+while turns < 10000:
+  # display_map()
   one_turn()
-  print(len(live_organisms))
+  if turns % 100 == 0:
+    os.system('clear')
+    print(turns)
+    print(len(live_organisms))
 
-  print_fitness_scores()
+  # print_fitness_scores()
 
-  sleep(.01)
+  turns += 1
+
+  # sleep(.001)
 
