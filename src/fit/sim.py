@@ -104,6 +104,7 @@ def update_winners_losers_recurse(x, already_checked_set):
 def reset_simulation():
   all_organisms.clear()
   live_organisms.clear()
+  original_organisms.clear()
   init_map()
 
 turns = 0
