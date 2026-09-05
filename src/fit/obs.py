@@ -1,10 +1,10 @@
 from fit.classes import Organism, Food
-from fit.map import env_map
+from fit.map import env_map, env_width, env_height
 
 
 def compute_sight(agent, x_delta, y_delta):
-  x = agent.x + x_delta
-  y = agent.y + y_delta
+  x = (agent.x + x_delta) % env_width
+  y = (agent.y + y_delta) % env_height
 
   if env_map[x,y] == None:
     return " "
@@ -14,34 +14,34 @@ def compute_sight(agent, x_delta, y_delta):
   return "*"
 
 def compute_horizontal_blur(agent, x_delta, y_delta):
-  x = agent.x + x_delta
-  y = agent.y + y_delta
+  x = (agent.x + x_delta) % env_width
+  y = (agent.y + y_delta) % env_height
   i = 0
   while i < 5:
-    if isinstance(env_map[x+i,y], Food):
+    if isinstance(env_map[(x+i)%env_width,y], Food):
       return "*"
     i += 1
 
   i = 0
   while i < 5:
-    if isinstance(env_map[x+i,y], Organism):
+    if isinstance(env_map[(x+i)%env_width,y], Organism):
       return "@"
     i += 1
 
   return " "
 
 def compute_vertical_blur(agent, x_delta, y_delta):
-  x = agent.x + x_delta
-  y = agent.y + y_delta
+  x = (agent.x + x_delta) % env_width
+  y = (agent.y + y_delta) % env_height
   i = 0
   while i < 5:
-    if isinstance(env_map[x,y+i], Food):
+    if isinstance(env_map[x,(y+i)%env_height], Food):
       return "*"
     i += 1
 
   i = 0
   while i < 5:
-    if isinstance(env_map[x,y+i], Organism):
+    if isinstance(env_map[x,(y+i)%env_height], Organism):
       return "@"
     i += 1
 

@@ -64,8 +64,11 @@ def modify_ancestor_count(x, delta, already_checked_set):
 
     already_checked_set.add(parent)
 
+    # Testing this: 87sec with this uncommented (and with "return" instead of "conintue")
+    # 192sec with this commented out
+    # 86 sec w/this uncommented (and "continue")
     if parent.isWinner:
-      return
+      continue
 
     parent.num_live_descendants += delta
 
@@ -79,12 +82,11 @@ def modify_ancestor_count(x, delta, already_checked_set):
 def try_to_eat(actor):
   for delta in adjacent_deltas:
     x,y = delta
-    x += actor.x
-    y += actor.y
+    x = (x + actor.x) % env_width
+    y = (y + actor.y) % env_height
     if isinstance(env_map[x,y], Food):
       food = env_map[x,y]
       env_map[x,y] = None
-      actor.hp = max(10, actor.hp+1)
       actor.satiety = 100
 
       if food.foodtype != FOOD_NORMAL:
@@ -95,6 +97,8 @@ def try_to_eat(actor):
         if food.foodtype in [STERILE_FUTURE_DESCS_BONUS, STERILE_ALL_DESCS_BONUS]:
           actor.futureDescsSterile = True
           actor.extraFertile = True
+        if food.foodtype == STERILE_FUTURE_DESCS:
+          actor.futureDescsSterile = True
         if food.foodtype == APHRODISIAC:
           actor.extraFertile = True
         if food.foodtype == INSANITY:

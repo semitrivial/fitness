@@ -66,6 +66,8 @@ def one_turn():
   repopulate_food()
 
   for actor in actor_list:
+    if actor.isDead:
+      continue
     new_obs = gen_obs(actor)
     driver.train(actor.prev_obs, actor.prev_act, actor.prev_reward, new_obs)
 
@@ -93,6 +95,10 @@ def update_winners_losers_recurse(x, already_checked_set):
     x.isWinner = True
 
   for parent in x.parents:
+    # Necessary to call this here because the death of an organism
+    # which is not in your descendants can nevertheless trigger
+    # your becoming a winner. The code for updating counts only
+    # runs on ancestors of the dying organism.
     update_winners_losers_recurse(parent, already_checked_set)
 
 def reset_simulation():

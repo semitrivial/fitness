@@ -44,7 +44,6 @@ class Organism:
     self.y = y
     self.parents = parents
     self.children = set()
-    self.hp = 10
     self.satiety = 100
     self.prev_act = None
     self.prev_obs = None
