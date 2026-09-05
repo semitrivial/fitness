@@ -23,10 +23,10 @@ def try_to_reproduce(actor):
     return 0
 
   if actor.extraFertile:
-    if random()<1/3:
+    if random()<2/3:
       return 0
   else:
-    if random()<3/4:
+    if random()<5/6:
       return 0
 
   for delta in adjacent_deltas:

@@ -18,11 +18,11 @@ def age_actor(actor):
   actor.satiety -= 1
 
   if actor.satiety < 1:
-    if random() < 1/3:
+    if random() < 2/3:
       kill_actor(actor)
       return
 
-  if actor.age > 95:
+  if actor.age > 75:
     if random() < .25:
       kill_actor(actor)
 
