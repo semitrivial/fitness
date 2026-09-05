@@ -1,6 +1,6 @@
 from fit.agents.QLearner import QLearner
 from fit.map import adjacent_deltas, env_map, display_map, repopulate_food
-from fit.map import env_width, env_height, original_organisms
+from fit.map import env_width, env_height, original_organisms, init_map
 from fit.obs import gen_obs
 from fit.actions import try_to_reproduce, try_to_eat, try_to_move, action_list
 from fit.actions import handle_action, modify_ancestor_count
@@ -95,19 +95,41 @@ def update_winners_losers_recurse(x, already_checked_set):
   for parent in x.parents:
     update_winners_losers_recurse(parent, already_checked_set)
 
+def reset_simulation():
+  all_organisms.clear()
+  live_organisms.clear()
+  init_map()
+
 turns = 0
 
+# Initial training phase
+print("Performing initial training")
 while turns < 10000:
-  # display_map()
-  one_turn()
-  if turns % 100 == 0:
-    os.system('clear')
-    print(turns)
-    print(len(live_organisms))
+  turns += 1
 
-  # print_fitness_scores()
+  if turns % 100 == 0:
+    print(f"Finished training step {turns}/10000 (Currently {len(live_organisms)} live organisms)")
+
+  one_turn()
+  if len(live_organisms) == 0:
+    reset_simulation()
+
+turns = 0
+
+reset_simulation()
+
+while turns < 10000:
+  os.system('clear')
+  display_map()
+  one_turn()
+  # if turns % 100 == 0:
+  #   os.system('clear')
+  #   print(turns)
+  #   print(len(live_organisms))
+
+  print_fitness_scores()
 
   turns += 1
 
-  # sleep(.001)
+  sleep(.01)
 
