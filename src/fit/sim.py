@@ -1,15 +1,17 @@
 from fit.agents.QLearner import QLearner
 from fit.map import adjacent_deltas, env_map, display_map, repopulate_food
-from fit.map import env_width, env_height, original_organisms, init_map
+from fit.map import env_width, env_height, init_map
 from fit.obs import gen_obs
 from fit.actions import try_to_reproduce, try_to_eat, try_to_move, action_list
 from fit.actions import handle_action, modify_ancestor_count
 from fit.classes import Organism, Food, live_organisms, all_organisms
 from fit.fitness import print_fitness_scores
 
-from random import random, sample
+from random import random, seed, shuffle
 import os
 from time import sleep
+
+seed(0)
 
 driver = QLearner(len(action_list))
 
@@ -43,7 +45,8 @@ def kill_actor(actor):
 
 def one_turn():
   # Randomly choose order of action, to avoid collisions
-  actor_list = sample(list(live_organisms), len(live_organisms))
+  actor_list = sorted(live_organisms, key=lambda actor: (actor.x, actor.y))
+  shuffle(actor_list)
 
   for actor in actor_list:
     age_actor(actor)
@@ -104,10 +107,12 @@ def update_winners_losers_recurse(x, already_checked_set):
 def reset_simulation():
   all_organisms.clear()
   live_organisms.clear()
-  original_organisms.clear()
   init_map()
 
+reset_simulation()
+
 turns = 0
+
 
 # Initial training phase
 print("Performing initial training")
@@ -121,22 +126,32 @@ while turns < 10000:
   if len(live_organisms) == 0:
     reset_simulation()
 
-turns = 0
+rnd_seed = 1
 
-reset_simulation()
+def print_statistics():
+  print(f"{len(live_organisms)}")
 
-while turns < 10000:
-  os.system('clear')
-  display_map()
-  one_turn()
-  # if turns % 100 == 0:
-  #   os.system('clear')
-  #   print(turns)
-  #   print(len(live_organisms))
+#9,6,10,1,5,3,9
+#24, 40, 45
 
-  print_fitness_scores()
+while True:
+  turns = 0
 
-  turns += 1
+  seed(rnd_seed)
 
-  sleep(.01)
+  reset_simulation()
+
+  while turns < 100:
+    turns += 1
+    one_turn()
+
+    if len(live_organisms) == 0:
+      print(f"Run {rnd_seed} went extinct in {turns} turns")
+      break
+
+  if not(turns < 100):
+    print(f"Run {rnd_seed} survived {turns} turns")
+    print_statistics()
+
+  rnd_seed += 1
 

@@ -26,10 +26,6 @@ def init_map():
       else:
         env_map[i,j] = None
 
-init_map()
-
-original_organisms = live_organisms.copy()
-
 def display_map():
   for i in range(env_height):
     txt = ""
