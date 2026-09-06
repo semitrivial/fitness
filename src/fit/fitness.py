@@ -49,6 +49,31 @@ def print_fitness_scores():
     result += f" Losers: {d[foodtype]['losers_who_ate_it']})"
     print(result)
 
+def print_statistics_header():
+  stats_file = open("stats.csv", "w")
 
+  foods_eaten_str = ""
+  for foodtype in foodtypes:
+    foods_eaten_str += foodtype_names[foodtype] + ","
 
+  stats_file.write(f"id,isWinner,isLoser,{foods_eaten_str}num_children\n")
+  stats_file.flush()
+  stats_file.close()
 
+def print_statistics():
+  stats_file = open("stats.csv", "a")
+
+  for x in all_organisms:
+    if (x.isWinner) or (x.isLoser):
+      foods_eaten_str = ""
+      for foodtype in foodtypes:
+        if foodtype in x.foods_eaten:
+          foods_eaten_str += "1"
+        else:
+          foods_eaten_str += "0"
+        foods_eaten_str += ","
+
+      stats_file.write(f"{id(x)},{x.isWinner},{x.isLoser},{foods_eaten_str}{len(x.children)}\n")
+
+  stats_file.flush()
+  stats_file.close()

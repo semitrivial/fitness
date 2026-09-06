@@ -5,7 +5,7 @@ from fit.obs import gen_obs
 from fit.actions import try_to_reproduce, try_to_eat, try_to_move, action_list
 from fit.actions import handle_action, modify_ancestor_count
 from fit.classes import Organism, Food, live_organisms, all_organisms
-from fit.fitness import print_fitness_scores
+from fit.fitness import print_statistics_header, print_statistics
 
 from random import random, seed, shuffle
 import os
@@ -128,11 +128,7 @@ while turns < 10000:
 
 rnd_seed = 1
 
-def print_statistics():
-  print(f"{len(live_organisms)}")
-
-#9,6,10,1,5,3,9
-#24, 40, 45
+print_statistics_header()
 
 while True:
   turns = 0
@@ -141,7 +137,7 @@ while True:
 
   reset_simulation()
 
-  while turns < 100:
+  while turns < 100000:
     turns += 1
     one_turn()
 
@@ -149,7 +145,7 @@ while True:
       print(f"Run {rnd_seed} went extinct in {turns} turns")
       break
 
-  if not(turns < 100):
+  if not(turns < 100000):
     print(f"Run {rnd_seed} survived {turns} turns")
     print_statistics()
 
