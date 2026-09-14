@@ -1,0 +1,176 @@
+#!/usr/bin/env python3
+"""Summarize winner ratios by food type and number of children.
+
+The input is processed in chunks so that the script can handle the large
+simulation export without loading the complete CSV into memory.
+"""
+
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
+WINNER_COLUMN = "isWinner"
+LOSER_COLUMN = "isLoser"
+CHILDREN_COLUMN = "num_children"
+ID_COLUMN = "id"
+
+
+def parse_args() -> argparse.Namespace:
+    script_dir = Path(__file__).resolve().parent
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "input_csv",
+        nargs="?",
+        type=Path,
+        default=script_dir.parent / "stats.csv",
+        help="Simulation CSV (default: ../stats.csv relative to this script).",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=script_dir,
+        help="Directory for result files (default: directory containing this script).",
+    )
+    parser.add_argument(
+        "--chunksize",
+        type=int,
+        default=250_000,
+        help="Rows read per pandas chunk (default: 250000).",
+    )
+    return parser.parse_args()
+
+
+def as_bool(values: pd.Series) -> pd.Series:
+    """Convert common CSV boolean encodings to a strict boolean Series."""
+    normalized = values.astype("string").str.strip().str.lower()
+    return normalized.isin({"1", "true", "t", "yes", "y"})
+
+
+def write_food_results(
+    food_columns: list[str], winner_counts: dict[str, int], loser_counts: dict[str, int], output: Path
+) -> None:
+    result = pd.DataFrame(
+        {
+            "food_type": food_columns,
+            "winner_count": [winner_counts[column] for column in food_columns],
+            "loser_count": [loser_counts[column] for column in food_columns],
+        }
+    )
+    result["total_count"] = result["winner_count"] + result["loser_count"]
+    result["winner_ratio"] = result["winner_count"].div(result["total_count"]).where(result["total_count"].gt(0))
+    result.to_csv(output, index=False)
+
+
+def write_children_results(children_counts: dict[int, list[int]], output: Path) -> pd.DataFrame:
+    rows = []
+    for children, (winner_count, loser_count) in sorted(children_counts.items()):
+        total_count = winner_count + loser_count
+        rows.append(
+            {
+                "num_children": children,
+                "winner_count": winner_count,
+                "loser_count": loser_count,
+                "total_count": total_count,
+                "winner_ratio": winner_count / total_count if total_count else float("nan"),
+            }
+        )
+    result = pd.DataFrame(rows)
+    result.to_csv(output, index=False)
+    return result
+
+
+def plot_children_ratios(result: pd.DataFrame, output_dir: Path) -> None:
+    plt.rcParams.update(
+        {
+            "font.family": "serif",
+            "font.size": 10,
+            "axes.labelsize": 11,
+            "axes.titlesize": 12,
+            "xtick.labelsize": 9,
+            "ytick.labelsize": 9,
+            "pdf.fonttype": 42,
+            "ps.fonttype": 42,
+        }
+    )
+    figure, axis = plt.subplots(figsize=(6.6, 4.1), constrained_layout=True)
+    axis.plot(
+        result["num_children"],
+        result["winner_ratio"],
+        color="#245a75",
+        linewidth=1.8,
+        marker="o",
+        markersize=4.8,
+        markerfacecolor="white",
+        markeredgewidth=1.3,
+        label="Winner ratio",
+    )
+    axis.set_xlabel("Number of children")
+    axis.set_ylabel("Winner ratio")
+    axis.set_ylim(-0.02, 1.02)
+    axis.set_yticks([0, 0.25, 0.5, 0.75, 1.0])
+    axis.yaxis.set_major_formatter(lambda value, position: f"{value:.2f}")
+    axis.grid(axis="y", color="#d9dee2", linewidth=0.75)
+    axis.grid(axis="x", visible=False)
+    axis.spines["top"].set_visible(False)
+    axis.spines["right"].set_visible(False)
+    axis.spines["left"].set_color("#68757d")
+    axis.spines["bottom"].set_color("#68757d")
+    axis.legend(frameon=False, loc="best")
+    figure.savefig(output_dir / "winner_ratio_by_children.pdf", bbox_inches="tight")
+    figure.savefig(output_dir / "winner_ratio_by_children.svg", bbox_inches="tight")
+    figure.savefig(output_dir / "winner_ratio_by_children.png", dpi=300, bbox_inches="tight")
+    plt.close(figure)
+
+
+def analyze(input_csv: Path, output_dir: Path, chunksize: int) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    header = pd.read_csv(input_csv, nrows=0)
+    required = {ID_COLUMN, WINNER_COLUMN, LOSER_COLUMN, CHILDREN_COLUMN}
+    missing = required.difference(header.columns)
+    if missing:
+        raise ValueError(f"Missing required column(s): {', '.join(sorted(missing))}")
+
+    food_columns = [
+        column
+        for column in header.columns
+        if column not in {ID_COLUMN, WINNER_COLUMN, LOSER_COLUMN, CHILDREN_COLUMN}
+    ]
+    winner_counts = dict.fromkeys(food_columns, 0)
+    loser_counts = dict.fromkeys(food_columns, 0)
+    children_counts: dict[int, list[int]] = {}
+
+    usecols = [WINNER_COLUMN, LOSER_COLUMN, CHILDREN_COLUMN, *food_columns]
+    for chunk in pd.read_csv(input_csv, usecols=usecols, chunksize=chunksize, low_memory=False):
+        winners = as_bool(chunk[WINNER_COLUMN])
+        losers = as_bool(chunk[LOSER_COLUMN])
+        eligible = winners | losers
+        winners = winners & eligible
+        losers = losers & eligible
+
+        for column in food_columns:
+            food_present = pd.to_numeric(chunk[column], errors="coerce").fillna(0).ne(0)
+            winner_counts[column] += int((winners & food_present).sum())
+            loser_counts[column] += int((losers & food_present).sum())
+
+        children = pd.to_numeric(chunk[CHILDREN_COLUMN], errors="coerce")
+        for value, count in children[winners].dropna().astype(int).value_counts().items():
+            children_counts.setdefault(int(value), [0, 0])[0] += int(count)
+        for value, count in children[losers].dropna().astype(int).value_counts().items():
+            children_counts.setdefault(int(value), [0, 0])[1] += int(count)
+
+    write_food_results(food_columns, winner_counts, loser_counts, output_dir / "winner_ratio_by_food.csv")
+    children_result = write_children_results(children_counts, output_dir / "winner_ratio_by_children.csv")
+    plot_children_ratios(children_result, output_dir)
+
+
+if __name__ == "__main__":
+    arguments = parse_args()
+    analyze(arguments.input_csv, arguments.output_dir, arguments.chunksize)
