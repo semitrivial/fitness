@@ -139,6 +139,11 @@ each agent took. Observations were passed to the RL agent as if the organisms
 had severely limited eyesight, in order to facilitate quick training of the
 agent ($Q$-learners are very quick to act, but the time it takes them to learn
 their environment grows exponentially in the eyesight of the agents).
+This means the organisms acted purely on instinct with no conscious memories,
+choosing each action solely based upon what they saw at that moment and not
+directly upon what they had seen earlier (though the reinforcement learning
+agent did train to update its weights, so that the organisms did possess a
+kind of communical instinctual memory).
 
 Because this paper is only intended as a simple proof of concept, we will not
 go into fine details here about the exact parameters used in the simulation;
@@ -151,18 +156,150 @@ attempt will fail unless both of the following conditions are true:
     \item There is \emph{exactly one} other organism adjacent to the organism
         who is attempting to reproduce.
     \item There is at least one empty space adjacent to the organism
-        who is attempting to reproduce.
+        who is attempting to reproduce (so that the child, which is born
+        immediately, has a place to be born into).
 \end{enumerate}
 We implemented the simulation this way in order to simplify many troublesome
-questions regarding parenthood and so on, while keeping the available option
+questions regarding parenthood and so on, while keeping the available action
 list manageable. As a side effect, this causes crowding to naturally reduce
 fertility, since, in a large crowd, it is difficult to satisfy condition 1.
-We will see in the section that this apparently resulted in a non-increasing
+We will see in the next section that this apparently resulted in a non-increasing
 child-count vs.\ fitness score: beyond a certain point, having more children
 was measured to actually confer \emph{less} fitness, probably due to this
-crowding mechanism.
+crowding mechanism. While this is of course contrived and unnatural, it
+nevertheless points to similar phenomena plausible in real life: beyond a certain
+point, having too many children really could be detrimental to one's fitness,
+if those children are competing for limited resources, etc.
+
+Within the simulation, food periodically grows at random locations in the
+environment. This food is split into eight different types (below, Strl should
+be read as ``sterile''; Fut should be read as ``future'';
+Desc should be read as ``descendant'';
+Frt should be read as ``fertility bonus''):
+\begin{itemize}
+    \item $\mathsf{Normal}$ food has no effect other than default satiation.
+    \item $\mathsf{StrlFutDesc}$ food is a food which has the
+        following effect. After eating the food, any time that the eater
+        subsequently reproduces, the offspring will be born sterile.
+        Said offspring will never be succeed at reproducing. Thus, if one eats
+        this food before having
+        any offspring, then one cannot ever have any grandchildren.
+    \item $\mathsf{StrlAllDesc}$ food is a food which causes
+        all of the eater's descendants to become sterile, including
+        descendants born after the food is eaten, but also including
+        descendants born \emph{before} the food was eaten (of course
+        this is physically unrealistic, but we included it because
+        it illuminates how our fitness measure works).
+    \item $\mathsf{StrlFutDescPlusFrt}$ food is exactly the same
+        as $\mathsf{StrlFutDesc}$ food, except that it additionally
+        confers an added fertility bonus to the eater, so that the eater
+        will enjoy easier reproduction after eating it. (However, the offspring
+        of this easier reproduction will be sterile.)
+    \item $\mathsf{StrlAllDescFrt}$ food is exactly the same
+        as $\mathsf{StrlAllDesc}$ food, except it additionally confers an
+        added fertility bonus, as in the previous bullet.
+    \item $\mathsf{Frt}$ food is a food which grants additional fertility to
+        its eater (in exactly the same way as in the previous two bullets).
+        It has no other side effects.
+    \item $\mathsf{Insanity}$ food is a food which hijacks the
+        reinforcement learning
+        agent driving the eater. After eating insanity food, the eater will
+        thereafter act in ways which maximize punishment and minimize reward
+        (rather than the usual strategy of minimizing punishment and
+        maximizing reward). This is partly inspired by ....
+    \item $\mathsf{Shortsightedness}$ food is a food which alters the observations
+        which are sent to the reinforcement learning agent in order to choose
+        the eater's actions. To make a long story short, this food has the
+        effect of reducing the eater's range of vision.
+\end{itemize}
 
 \section{Empirical results from the simulation}
+
+We ran the simulation 2488 times, terminating each run after 100,000 turns
+if the species did not go extinct before then. Of the runs where the species
+went extinct, extinction always occurred very early: if the species survived
+more than 200 turns, then it never was observed to go extinct before 100,000
+turns.
+
+For each non-extinct run, we tracked which organisms were winners and which
+organisms were losers by the time we terminated the run. For some organisms born
+late in the run, there was not enough time to determine their winner/loser
+status (they had living descendants and living non-descendants at the time
+when the run was terminated). These organisms were discarded for purposes of
+statistical analysis. From the organisms not discarded, we calculated fitness
+scores for each food type, and also for each childcount. The food type fitness
+scores we calculated are as follows:
+
+\begin{table}[ht]
+    \centering
+    \caption{Evolutionary fitness scores by food type.}
+    \label{tab:fitness-by-food}
+    \begin{tabular}{lr}
+        \hline
+        Food type & Evolutionary fitness score \\
+        \hline
+        $\mathsf{Normal}$ & 0.7658836489 \\
+        $\mathsf{StrlFutDescs}$ & 0.4764546404 \\
+        $\mathsf{StrlAllDescs}$ & 0.0000000000 \\
+        $\mathsf{StrlFutDescsFrt}$ & 0.4748666463 \\
+        $\mathsf{StrlAllDescsFrt}$ & 0.0000000000 \\
+        $\mathsf{Frt}$ & 0.8214282319 \\
+        $\mathsf{Insanity}$ & 0.6727775267 \\
+        $\mathsf{Shortsighted}$ & 0.7658694215 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+We make the following observations:
+\begin{enumerate}
+    \item $\mathsf{Normal}$ food is more fit than any food type with any detrimental effect.
+    \item $\mathsf{FrtlBonus}$ food is the most fit of all the foods.
+    \item $\mathsf{StrlAllDescs}$ and $\mathsf{StrlAllDescsBonus}$ had
+        fitness scores of $0$.
+    \item $\mathsf{StrlFutDescs}$ and $\mathsf{StrlFutDescsFrt}$ had
+        almost identical fitness scores, the latter being slightly smaller
+        than the former.
+    \item $\mathsf{Insanity}$ was worse than normal food but not as bad
+        as any of the sterility side-effect foods.
+    \item $\mathsf{Shortsighted}$, surprisingly, had virtually the exact
+        same fitness as $\mathsf{Normal}$.
+\end{enumerate}
+
+Most of these findings are unsurprising. The $0$ fitness of the
+foods which confer sterility to all descendants corresponds to the fact that
+eating such foods guarantees one will become a loser, regardless of how fertile
+one is. This empirically confirms our observation in the Introduction that
+having many sterile children (and no non-sterile children) is inherently unfit,
+contrary to the naive approach of measuring fitness solely by counting
+offspring.
+
+The following findings are rather surprising:
+\begin{itemize}
+    \item $\mathsf{StrlFutDescs}$ actually outperforms
+        $\mathsf{StrlFutDescsFtl}$. The amount by which it outperforms
+        is quite small; this could just be a statistical fluke.
+        But it does make sense that $\mathsf{StrlFutDescs}$ would outperform,
+        because of the way reproduction works in the simulation, as remarked
+        in the previous section. When one eats food which makes one's future
+        descendants become sterile, and also grants one a fertility bonus
+        (so that one can more prolifically produce such sterile future children),
+        this is detrimental to any non-sterile children one has already
+        produced before eating the food. The greater abundance of sterile
+        children resulting from the fertility bonus compete with the
+        fertile children born before the food was eaten.
+    \item $\mathsf{Shortsighted}$ seems to have the same fitness as
+        $\mathsf{Normal}$ food. We cannot see any way of explaining this,
+        except merely that it turns out the longer line of sight was not
+        actually beneficial in the environment in question. This illustrates
+        that these fitness scores can reveal facts which are not evident
+        at first glance. In this case, the fitness scores reveal that
+        the superior vision of organisms that did not eat $\mathsf{Shortsighted}$
+        food is not actually that helpful. Of course this would not generalize
+        to arbitrary environments; it is an artifact of the particular laws
+        of physics in our simulation.
+\end{itemize}
+
+
 
 \section{Summary and conclusion}
 
