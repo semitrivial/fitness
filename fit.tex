@@ -55,7 +55,8 @@ the calculation any number of generations runs into the same problem.
 
 To be clear, the problem does not merely arise in situations like ``all of this
 organism's children are sterile,'' which may seem contrived.
-The problem can arise in very realistic scenarios. For example, as noted by ...,
+The problem can arise in very realistic scenarios. For example, as noted by
+\cite{alexander2021can},
 organisms could inhabit an environment which very rarely suffers from heatwaves.
 If the heatwaves are rare enough, organisms could evolve to lose expensive heatwave
 resistance, which would seem (in the short term) to make them more fit.
@@ -71,12 +72,15 @@ amount of fitness to a fruitfly as co-parenting offspring
 with an unrelated fruitfly mate.
 
 We address this by using the idea of identical ancestor points from
-... and ..., more recently studied by .... Motivated by the idea of identical
+\cite{chang1999recent} and \cite{rohde2004modelling},
+more recently studied by \cite{alexander2026specieslike}.
+Motivated by the idea of identical
 ancestor points, we consider two types of organisms. We call an organism $x$ a
 \emph{winner} if, at some point in time (probably in the distant future after
 $x$'s death), all living members of $x$'s species are descended from $x$.
 We call $x$ a \emph{loser} if $x$'s descendants eventually go extinct.
-We argued ... for what we call the \emph{identical ancestor point axiom}.
+We argued \cite{alexander2026specieslike} for what we call
+the \emph{identical ancestor point axiom}.
 This axiom states that in any species, every organism of that species is either
 a winner or a loser, in the above sense. This offers a shockingly simple
 new way to measure the fitness of a finite set $S$ of organisms in a
@@ -93,19 +97,23 @@ The roadmap of this paper is as follows:
 
 \begin{itemize}
     \item
-    In Section ..., we discuss the theory behind this proposed new methodology
+    In Section \ref{theoryscn},
+    we discuss the theory behind this proposed new methodology
     in greater detail.
     \item
-    In Section ..., we describe a bespoke simulation which we implemented
+    In Section \ref{simulationsecn},
+    we describe a bespoke simulation which we implemented
     in Python in order to empirically measure evolutionary fitness values.
     \item
-    In Section ..., we describe empirical results obtained from the aforementioned
+    In Section \ref{empiricalsecn},
+    we describe empirical results obtained from the aforementioned
     simulation.
     \item
-    In Section ..., we summarize and make concluding remarks.
+    In Section \ref{summarysecn}, we summarize and make concluding remarks.
 \end{itemize}
 
 \section{Theory behind this new methodology}
+\label{theoryscn}
 
 The so-called \emph{identical ancestor point axiom} states that any species can be
 partitioned into so-called \emph{winners} and \emph{losers}, defined in the
@@ -143,6 +151,7 @@ a winner then it has fitness $1$, and if it is a loser, then it has
 fitness $0$.
 
 \section{A python simulation}
+\label{simulationsecn}
 
 This paper is intended as a proof of concept for the
 aforementioned fitness-measuring methodology.
@@ -159,7 +168,7 @@ every organism takes one \emph{action}. Possible actions are:
     \item Attempt to eat adjacent food.
     \item Attempt to reproduce with adjacent fellow organism.
 \end{itemize}
-A $Q$-learner reinforcement learning (RL) agent ...
+A $Q$-learner reinforcement learning (RL) agent \cite{watkins2026learning}
 was used to choose which actions
 each organism took on each turn.
 Observations were passed to the RL agent as if the organisms
@@ -232,7 +241,7 @@ Frt should be read as ``fertility bonus''):
         agent driving the eater. After eating insanity food, the eater will
         thereafter act in ways which maximize punishment and minimize reward
         (rather than the usual strategy of minimizing punishment and
-        maximizing reward). This is partly inspired by ....
+        maximizing reward). This is partly inspired by \cite{alexander2021reward}.
     \item $\mathsf{Shortsightedness}$ food is a food which alters the observations
         which are sent to the reinforcement learning agent in order to choose
         the eater's actions. To make a long story short, this food has the
@@ -240,6 +249,7 @@ Frt should be read as ``fertility bonus''):
 \end{itemize}
 
 \section{Empirical results from the simulation}
+\label{empiricalsecn}
 
 We ran the simulation 2488 times, terminating each run after 100,000 turns
 if the species did not go extinct before then. Of the runs where the species
@@ -386,6 +396,7 @@ Table \ref{tab:winner-loser-counts-by-children}.
 \end{table}
 
 \section{Summary and conclusion}
+\label{summarysecn}
 
 We introduced a new methodology for measuring evolutionary fitness of
 sets of organisms. This serves as a proxy for measuring evolutionary
@@ -398,7 +409,8 @@ organism who is ancestor to all but finitely many future members of the species.
 A \emph{loser} is an organism whose descendants eventually go extinct.
 The \emph{fitness} of a set of organisms is simply the proportion of winners
 in that set.
-This methodology hinges on the theory introduced in ..., where we argued
+This methodology hinges on the theory introduced
+in \cite{alexander2026specieslike}, where we argued
 that it is plausible that species ought to be defined in such a way that
 the \emph{identical ancestor point axiom} holds, which axiom is the statement
 that every organism in any species is either a winner or a loser.
