@@ -24,7 +24,17 @@
 \maketitle
 
 \begin{abstract}
-    ...
+    We introduce a new methodology for measuring evolutionary fitness
+    of sets of organisms.
+    This methodology is based on the so-called identical ancestor point
+    axiom, introduced in 2026 in the Journal of Mathematical Biology,
+    which says that in any species, any organism is either the ancestor
+    of almost all the future species (we here call such organisms ``winners'')
+    or else an ancestor of almost none of the future species (we here
+    call such organisms ``losers''). For any set of organisms in a species,
+    we simply take the proportion of winners in that set to be a measure
+    of fitness. We demonstrate this new method by reporting fitness measurements
+    for simulations run in silica.
 \end{abstract}
 
 \section{Introduction}
@@ -52,10 +62,13 @@ resistance, which would seem (in the short term) to make them more fit.
 But then if all such mutants are killed by the next heatwave, then the
 mutation was actually unfit.
 
-Another example: naive ``fitness $=$ number of children'' examples often gloss over
+Another example: naive ``fitness $=$ number of children'' considerations
+often gloss over
 the fact that in nature, organisms can sexually reproduce with their own children.
-It is not clear whether having a child with its own child should grant the same
-amount of fitness to a fruitfly as having a child with an unrelated fruitfly mate.
+It is not clear whether co-parenting offspring
+with its own child should grant the same
+amount of fitness to a fruitfly as co-parenting offspring
+with an unrelated fruitfly mate.
 
 We address this by using the idea of identical ancestor points from
 ... and ..., more recently studied by .... Motivated by the idea of identical
@@ -104,9 +117,13 @@ organisms in a species.
 
 Sets of organisms correspond naturally to actions, in the sense that
 to any action, we can associate the set of organisms who take that action.
-For example, consider the action of eating a poisonous mushroom.
+For example, consider the act of eating a poisonous mushroom.
 This action can be associated with the set which contains precisely those
 organisms who ate a poisonous mushroom during their lifetime.
+Thus, being able to measure fitness of sets of organisms, we can measure
+% following lines thanks to dragoon347
+fitness of actions (but of course this should really be thought of as
+fitness of actions in particular environments).
 
 Absolute values computed using this methodology are, as far as we know
 currently, not meaningful by themselves (save only in degenerate cases
@@ -118,10 +135,18 @@ score of eating delicious strawberries is $0.85$ then since
 $0.85>0.65$, we conclude that eating delicious strawberries is more
 evolutionarily fit than eating poisonous mushrooms.
 
+% Following paragraph inspired by discussion w/blank-w9t
+As a special case, we could consider the fitness of singletons, i.e.,
+of individual organisms. However, restricted to individual organisms,
+fitness, measures this way, is a boolean variable. If the organism is
+a winner then it has fitness $1$, and if it is a loser, then it has
+fitness $0$.
+
 \section{A python simulation}
 
-This paper is intended as a proof of concept for a new methodology for measuring
-evolutionary fitness. We implemented a simplisitic simulation of organisms using
+This paper is intended as a proof of concept for the
+aforementioned fitness-measuring methodology.
+We implemented a simplisitic simulation of organisms using
 python. In this simulation, a small 2-dimensional world is initially populated
 with a random number of randomly scattered organisms, all of the same species.
 Time in this world is discrete, broken up into \emph{turns}. On every turn,
@@ -134,8 +159,10 @@ every organism takes one \emph{action}. Possible actions are:
     \item Attempt to eat adjacent food.
     \item Attempt to reproduce with adjacent fellow organism.
 \end{itemize}
-A $Q$-learner reinforcement learning (RL) agent was used to choose which actions
-each agent took. Observations were passed to the RL agent as if the organisms
+A $Q$-learner reinforcement learning (RL) agent ...
+was used to choose which actions
+each organism took on each turn.
+Observations were passed to the RL agent as if the organisms
 had severely limited eyesight, in order to facilitate quick training of the
 agent ($Q$-learners are very quick to act, but the time it takes them to learn
 their environment grows exponentially in the eyesight of the agents).
@@ -143,7 +170,7 @@ This means the organisms acted purely on instinct with no conscious memories,
 choosing each action solely based upon what they saw at that moment and not
 directly upon what they had seen earlier (though the reinforcement learning
 agent did train to update its weights, so that the organisms did possess a
-kind of communical instinctual memory).
+kind of communal instinctual memory).
 
 Because this paper is only intended as a simple proof of concept, we will not
 go into fine details here about the exact parameters used in the simulation;
@@ -181,13 +208,12 @@ Frt should be read as ``fertility bonus''):
     \item $\mathsf{StrlFutDesc}$ food is a food which has the
         following effect. After eating the food, any time that the eater
         subsequently reproduces, the offspring will be born sterile.
-        Said offspring will never be succeed at reproducing. Thus, if one eats
+        Said offspring will never succeed at reproducing. Thus, if one eats
         this food before having
         any offspring, then one cannot ever have any grandchildren.
     \item $\mathsf{StrlAllDesc}$ food is a food which causes
         all of the eater's descendants to become sterile, including
-        descendants born after the food is eaten, but also including
-        descendants born \emph{before} the food was eaten (of course
+        descendants born before or after the food is eaten (of course
         this is physically unrealistic, but we included it because
         it illuminates how our fitness measure works).
     \item $\mathsf{StrlFutDescPlusFrt}$ food is exactly the same
@@ -253,16 +279,16 @@ scores we calculated are as follows:
 We make the following observations:
 \begin{enumerate}
     \item $\mathsf{Normal}$ food is more fit than any food type with any detrimental effect.
-    \item $\mathsf{FrtlBonus}$ food is the most fit of all the foods.
+    \item $\mathsf{Frt}$ food is the most fit of all the foods.
     \item $\mathsf{StrlAllDescs}$ and $\mathsf{StrlAllDescsBonus}$ had
         fitness scores of $0$.
     \item $\mathsf{StrlFutDescs}$ and $\mathsf{StrlFutDescsFrt}$ had
         almost identical fitness scores, the latter being slightly smaller
         than the former.
-    \item $\mathsf{Insanity}$ was worse than normal food but not as bad
+    \item $\mathsf{Insanity}$ food was worse than normal food but not as bad
         as any of the sterility side-effect foods.
-    \item $\mathsf{Shortsighted}$, surprisingly, had virtually the exact
-        same fitness as $\mathsf{Normal}$.
+    \item $\mathsf{Shortsighted}$ food, surprisingly, had virtually the exact
+        same fitness as $\mathsf{Normal}$ food.
 \end{enumerate}
 
 Most of these findings are unsurprising. The $0$ fitness of the
@@ -287,7 +313,7 @@ The following findings are rather surprising:
         produced before eating the food. The greater abundance of sterile
         children resulting from the fertility bonus compete with the
         fertile children born before the food was eaten.
-    \item $\mathsf{Shortsighted}$ seems to have the same fitness as
+    \item $\mathsf{Shortsighted}$ food seems to have the same fitness as
         $\mathsf{Normal}$ food. We cannot see any way of explaining this,
         except merely that it turns out the longer line of sight was not
         actually beneficial in the environment in question. This illustrates
@@ -299,9 +325,104 @@ The following findings are rather surprising:
         of physics in our simulation.
 \end{itemize}
 
+It is also interesting to compute fitness scores for the act of ``having $n$
+children'' as $n$ varies. We see from Figure \ref{childrencountfigure}
+that in this particular
+simulated environment, the slope of the fitness-vs.-childcount curve is
+initially very positive, but that later on (i.e., with higher childcount),
+said slope actually becomes slightly negative. After a certain point,
+having more children is actually detrimental to fitness. This is presumably
+due to the simulation's unique crowding mechanism which we discussed above:
+successful reproduction requires privacy, and by having too many children,
+one interferes with one's already-existing children being able to achieve
+such privacy.
 
+\begin{figure}
+    \label{childrencountfigure}
+    \begin{center}
+        \includegraphics[scale=.75]{winner_ratio_by_children.pdf}
+    \end{center}
+    \caption{Fitness (as calculated using our new methodology) as a function
+    of total number of children given birth to in an organism's lifetime}
+\end{figure}
+
+Note the third-from-final point in the figure has an unexpected drop.
+This is because very few organisms had that many children. The numbers
+of organisms with each childcount are given in
+Table \ref{tab:winner-loser-counts-by-children}.
+
+\begin{table}[ht]
+    \centering
+    \caption{Winner and loser counts by number of children.}
+    \label{tab:winner-loser-counts-by-children}
+    \begin{tabular}{rrr}
+        \hline
+        Number of children & Winners & Losers \\
+        \hline
+        0 & 0 & 91,869,632 \\
+        1 & 124,694,671 & 38,855,297 \\
+        2 & 158,831,471 & 10,861,096 \\
+        3 & 113,186,996 & 2,816,873 \\
+        4 & 57,615,388 & 878,556 \\
+        5 & 22,889,365 & 308,922 \\
+        6 & 7,433,068 & 103,229 \\
+        7 & 2,037,246 & 30,919 \\
+        8 & 482,937 & 8,344 \\
+        9 & 102,202 & 2,054 \\
+        10 & 20,623 & 525 \\
+        11 & 4,556 & 134 \\
+        12 & 1,301 & 40 \\
+        13 & 512 & 26 \\
+        14 & 230 & 7 \\
+        15 & 116 & 4 \\
+        16 & 58 & 4 \\
+        17 & 29 & 0 \\
+        18 & 7 & 0 \\
+        19 & 4 & 2 \\
+        20 & 1 & 0 \\
+        21 & 1 & 0 \\
+        \hline
+    \end{tabular}
+\end{table}
 
 \section{Summary and conclusion}
+
+We introduced a new methodology for measuring evolutionary fitness of
+sets of organisms. This serves as a proxy for measuring evolutionary
+fitness of \emph{actions}, namely: the fitness of an action can be
+thought of as the fitness of the set of organisms who take said action.
+
+This methodology is based on the idea of dividing the species into
+so-called \emph{winners} and \emph{losers}. A \emph{winner} is an
+organism who is ancestor to all but finitely many future members of the species.
+A \emph{loser} is an organism whose descendants eventually go extinct.
+The \emph{fitness} of a set of organisms is simply the proportion of winners
+in that set.
+This methodology hinges on the theory introduced in ..., where we argued
+that it is plausible that species ought to be defined in such a way that
+the \emph{identical ancestor point axiom} holds, which axiom is the statement
+that every organism in any species is either a winner or a loser.
+This is what makes the methodology make sense (a priori, if not all organisms
+were winners or losers, then the non-winner-non-loser organisms would complicate
+things).
+
+We ran simulations to demonstrate this new methodology \emph{in silica}.
+The results agree with intuition, with one exception, namely that we found
+no fitness penalty associated with eating a certain food which causes the
+eater to become shortsighted. We speculate that this reveals that shortsightedness
+is not particularly detrimental in the specific worlds we simulated:
+showing that these fitness results can reveal things to us which were
+not clear beforehand (we had no idea beforehand that, the way the worlds
+we simulated work, shortsightedness was so harmless there).
+
+It would be very interesting to experimentally measure fitness of actions
+in this way with a living, real-world population. Of course, this would be
+significantly more difficult, not only because it would require much more time
+for the population to proceed, but also because it would require very careful
+observation to determine which organisms are parents of which organisms
+(whether by extreme surveilance or by genetic analysis, neither of which
+would be particularly cheap).
+
 
 
 
