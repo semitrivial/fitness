@@ -119,7 +119,7 @@ turns = 0
 
 # Initial training phase
 print("Performing initial training")
-while turns < 10000:
+while turns < 1000000:
   turns += 1
 
   if turns % 100 == 0:
@@ -128,6 +128,8 @@ while turns < 10000:
   one_turn()
   if len(live_organisms) == 0:
     reset_simulation()
+
+driver.disable_training()
 
 rnd_seed = 1
 

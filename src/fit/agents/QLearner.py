@@ -11,6 +11,7 @@ class QLearner:
     self.gamma = gamma
     self.actions = range(self.n_actions)
     self.qtable = {}
+    self.training_disabled = False
 
   def act(self, obs):
     qtable, epsilon, actions = self.qtable, self.epsilon, self.actions
@@ -35,12 +36,17 @@ class QLearner:
       return min(actions, key=lambda a: qtable[obs,a])
 
   def train(self, o_prev, a, r, o_next):
+    if self.training_disabled:
+      return
     qtable, actions, gamma = self.qtable, self.actions, self.gamma
     maybe_add_obs_to_qtable(qtable, actions, o_prev)
     maybe_add_obs_to_qtable(qtable, actions, o_next)
     qtarget = r + gamma * max([qtable[o_next,actn] for actn in actions])
     qpredict = qtable[o_prev, a]
     qtable[o_prev, a] += self.learning_rate * (qtarget - qpredict)
+
+  def disable_training(self):
+    self.training_disabled = True
 
 def maybe_add_obs_to_qtable(qtable, actions, obs):
   if not((obs, 0) in qtable):
