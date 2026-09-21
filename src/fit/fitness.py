@@ -72,8 +72,8 @@ def organism_fieldnames():
 
 RUN_FIELDNAMES = [
   "run_id", "random_seed", "completed_turns", "went_extinct",
-  "final_population", "organisms_created", "winner_only", "loser_only",
-  "both_winner_and_loser", "unresolved",
+  "final_population", "organisms_created", "winner_count", "loser_count",
+  "both_count", "unresolved_count",
 ]
 
 
@@ -123,10 +123,10 @@ def print_statistics(run_id):
 
 def print_run_statistics(run_id, random_seed, completed_turns, went_extinct):
   """Append one manifest row for every run, extinct or surviving."""
-  winner_only = sum(x.isWinner and not x.isLoser for x in all_organisms)
-  loser_only = sum(x.isLoser and not x.isWinner for x in all_organisms)
-  both = sum(x.isWinner and x.isLoser for x in all_organisms)
-  unresolved = sum(not x.isWinner and not x.isLoser for x in all_organisms)
+  winner_count = sum(x.isWinner and not x.isLoser for x in all_organisms)
+  loser_count = sum(x.isLoser and not x.isWinner for x in all_organisms)
+  both_count = sum(x.isWinner and x.isLoser for x in all_organisms)
+  unresolved_count = sum(not x.isWinner and not x.isLoser for x in all_organisms)
   row = {
     "run_id": run_id,
     "random_seed": random_seed,
@@ -134,10 +134,10 @@ def print_run_statistics(run_id, random_seed, completed_turns, went_extinct):
     "went_extinct": went_extinct,
     "final_population": sum(not x.isDead for x in all_organisms),
     "organisms_created": len(all_organisms),
-    "winner_only": winner_only,
-    "loser_only": loser_only,
-    "both_winner_and_loser": both,
-    "unresolved": unresolved,
+    "winner_count": winner_count,
+    "loser_count": loser_count,
+    "both_count": both_count,
+    "unresolved_count": unresolved_count,
   }
   with open("runs.csv", "a", newline="") as runs_file:
     csv.DictWriter(runs_file, fieldnames=RUN_FIELDNAMES).writerow(row)
