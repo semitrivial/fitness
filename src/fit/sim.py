@@ -123,7 +123,7 @@ while turns < 1000000:
   turns += 1
 
   if turns % 100 == 0:
-    print(f"Finished training step {turns}/10000 (Currently {len(live_organisms)} live organisms)")
+    print(f"Finished training step {turns}/1000000 (Currently {len(live_organisms)} live organisms)")
 
   one_turn()
   if len(live_organisms) == 0:
