@@ -45,7 +45,7 @@ def try_to_reproduce(actor):
     return -1
 
   if not(partner.sterile):
-    child = Organism(*empty, [actor, partner])
+    child = Organism(*empty, [actor, partner], birth_turn=actor.current_turn)
     actor.children.add(child)
     partner.children.add(child)
     env_map[empty] = child
@@ -73,9 +73,9 @@ def modify_ancestor_count(x, delta, already_checked_set):
     parent.num_live_descendants += delta
 
     if (parent.num_live_descendants == 0) and parent.isDead:
-      parent.isLoser = True
+      parent.mark_loser(x.current_turn)
     if parent.num_live_descendants == len(live_organisms):
-      parent.isWinner = True
+      parent.mark_winner(x.current_turn)
 
     modify_ancestor_count(parent, delta, already_checked_set)
 
@@ -107,6 +107,10 @@ def try_to_eat(actor):
           actor.isShortsighted = True
 
       actor.foods_eaten.add(food.foodtype)
+      actor.food_eaten_counts[food.foodtype] = actor.food_eaten_counts.get(food.foodtype, 0) + 1
+      actor.last_food_eaten_turn[food.foodtype] = actor.current_turn
+      if food.foodtype not in actor.first_food_eaten_turn:
+        actor.first_food_eaten_turn[food.foodtype] = actor.current_turn
 
       return 1
 

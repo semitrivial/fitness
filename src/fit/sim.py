@@ -4,8 +4,8 @@ from fit.map import env_width, env_height, init_map
 from fit.obs import gen_obs
 from fit.actions import try_to_reproduce, try_to_eat, try_to_move, action_list
 from fit.actions import handle_action, modify_ancestor_count
-from fit.classes import Organism, Food, live_organisms, all_organisms
-from fit.fitness import print_statistics_header, print_statistics
+from fit.classes import Organism, Food, live_organisms, all_organisms, reset_organism_ids
+from fit.fitness import print_statistics_header, print_statistics, print_run_statistics
 
 from random import random, seed, shuffle
 import os
@@ -34,14 +34,15 @@ def kill_actor(actor):
 
   if len(live_organisms) == 0:
     for organism in all_organisms:
-      organism.isWinner = True
+      organism.mark_winner(actor.current_turn)
 
   modify_ancestor_count(actor, delta=-1, already_checked_set=set())
   actor.isDead = True
+  actor.death_turn = actor.current_turn
   if actor.num_live_descendants == 0:
-    actor.isLoser = True
+    actor.mark_loser(actor.current_turn)
   if len(live_organisms) == 0:
-    actor.isWinner = True
+    actor.mark_winner(actor.current_turn)
 
 def one_turn():
   # Randomly choose order of action, to avoid collisions
@@ -49,6 +50,7 @@ def one_turn():
   shuffle(actor_list)
 
   for actor in actor_list:
+    actor.current_turn = turns
     age_actor(actor)
 
     if actor.isDead:
@@ -92,10 +94,10 @@ def update_winners_losers_recurse(x, already_checked_set):
     return
 
   if x.num_live_descendants == 0 and not(x in live_organisms):
-    x.isLoser = True
+    x.mark_loser(x.current_turn)
 
   if x.num_live_descendants == len(live_organisms):
-    x.isWinner = True
+    x.mark_winner(x.current_turn)
 
   for parent in x.parents:
     # Necessary to call this here because the death of an organism
@@ -107,6 +109,7 @@ def update_winners_losers_recurse(x, already_checked_set):
 def reset_simulation():
   all_organisms.clear()
   live_organisms.clear()
+  reset_organism_ids()
   init_map()
 
 reset_simulation()
@@ -145,9 +148,16 @@ while True:
       print(f"Run {rnd_seed} went extinct in {turns} turns")
       break
 
-  if not(turns < 100000):
+  went_extinct = len(live_organisms) == 0
+  if not went_extinct:
     print(f"Run {rnd_seed} survived {turns} turns")
-    print_statistics()
+  print_statistics(run_id=rnd_seed)
+  print_run_statistics(
+    run_id=rnd_seed,
+    random_seed=rnd_seed,
+    completed_turns=turns,
+    went_extinct=went_extinct,
+  )
 
   rnd_seed += 1
 

@@ -1,3 +1,5 @@
+import csv
+
 from fit.classes import all_organisms
 from fit.classes import FOOD_NORMAL, STERILE_FUTURE_DESCS, STERILE_ALL_DESCS
 from fit.classes import STERILE_FUTURE_DESCS_BONUS, STERILE_ALL_DESCS_BONUS
@@ -49,31 +51,93 @@ def print_fitness_scores():
     result += f" Losers: {d[foodtype]['losers_who_ate_it']})"
     print(result)
 
-def print_statistics_header():
-  stats_file = open("stats.csv", "w")
-
-  foods_eaten_str = ""
+def organism_fieldnames():
+  fields = [
+    "id", "run_id", "organism_id", "parent_ids", "birth_turn", "death_turn",
+    "winner_turn", "loser_turn", "isWinner", "isLoser", "isDead",
+    "age_at_export", "satiety_at_export", "num_children",
+    "sterile_at_export", "future_descendants_sterile_at_export",
+    "extra_fertile_at_export", "is_insane_at_export",
+    "is_shortsighted_at_export",
+  ]
   for foodtype in foodtypes:
-    foods_eaten_str += foodtype_names[foodtype] + ","
+    name = foodtype_names[foodtype]
+    # The original binary columns remain for compatibility with the existing
+    # analysis scripts. The additional columns preserve exposure dose and time.
+    fields.extend([
+      name, f"{name}_count", f"{name}_first_turn", f"{name}_last_turn",
+    ])
+  return fields
 
-  stats_file.write(f"id,isWinner,isLoser,{foods_eaten_str}num_children\n")
-  stats_file.flush()
-  stats_file.close()
 
-def print_statistics():
-  stats_file = open("stats.csv", "a")
+RUN_FIELDNAMES = [
+  "run_id", "random_seed", "completed_turns", "went_extinct",
+  "final_population", "organisms_created", "winner_only", "loser_only",
+  "both_winner_and_loser", "unresolved",
+]
 
-  for x in all_organisms:
-    if (x.isWinner) or (x.isLoser):
-      foods_eaten_str = ""
+
+def print_statistics_header():
+  with open("stats.csv", "w", newline="") as stats_file:
+    csv.DictWriter(stats_file, fieldnames=organism_fieldnames()).writeheader()
+  with open("runs.csv", "w", newline="") as runs_file:
+    csv.DictWriter(runs_file, fieldnames=RUN_FIELDNAMES).writeheader()
+
+
+def print_statistics(run_id):
+  """Append every organism in one run, including unresolved organisms."""
+  with open("stats.csv", "a", newline="") as stats_file:
+    writer = csv.DictWriter(stats_file, fieldnames=organism_fieldnames())
+    for x in sorted(all_organisms, key=lambda organism: organism.organism_id):
+      row = {
+        # Retain the legacy id column for the existing analysis scripts.
+        # run_id makes it unique even though organism_id restarts each run.
+        "id": f"{run_id}:{x.organism_id}",
+        "run_id": run_id,
+        "organism_id": x.organism_id,
+        "parent_ids": ";".join(str(parent.organism_id) for parent in x.parents),
+        "birth_turn": x.birth_turn,
+        "death_turn": x.death_turn,
+        "winner_turn": x.winner_turn,
+        "loser_turn": x.loser_turn,
+        "isWinner": x.isWinner,
+        "isLoser": x.isLoser,
+        "isDead": x.isDead,
+        "age_at_export": x.age,
+        "satiety_at_export": x.satiety,
+        "num_children": len(x.children),
+        "sterile_at_export": x.sterile,
+        "future_descendants_sterile_at_export": x.futureDescsSterile,
+        "extra_fertile_at_export": x.extraFertile,
+        "is_insane_at_export": x.isInsane,
+        "is_shortsighted_at_export": x.isShortsighted,
+      }
       for foodtype in foodtypes:
-        if foodtype in x.foods_eaten:
-          foods_eaten_str += "1"
-        else:
-          foods_eaten_str += "0"
-        foods_eaten_str += ","
+        name = foodtype_names[foodtype]
+        row[name] = int(foodtype in x.foods_eaten) # Record whether or not the organism ate the food.
+        row[f"{name}_count"] = x.food_eaten_counts.get(foodtype, 0)
+        row[f"{name}_first_turn"] = x.first_food_eaten_turn.get(foodtype)
+        row[f"{name}_last_turn"] = x.last_food_eaten_turn.get(foodtype)
+      writer.writerow(row)
 
-      stats_file.write(f"{id(x)},{x.isWinner},{x.isLoser},{foods_eaten_str}{len(x.children)}\n")
 
-  stats_file.flush()
-  stats_file.close()
+def print_run_statistics(run_id, random_seed, completed_turns, went_extinct):
+  """Append one manifest row for every run, extinct or surviving."""
+  winner_only = sum(x.isWinner and not x.isLoser for x in all_organisms)
+  loser_only = sum(x.isLoser and not x.isWinner for x in all_organisms)
+  both = sum(x.isWinner and x.isLoser for x in all_organisms)
+  unresolved = sum(not x.isWinner and not x.isLoser for x in all_organisms)
+  row = {
+    "run_id": run_id,
+    "random_seed": random_seed,
+    "completed_turns": completed_turns,
+    "went_extinct": went_extinct,
+    "final_population": sum(not x.isDead for x in all_organisms),
+    "organisms_created": len(all_organisms),
+    "winner_only": winner_only,
+    "loser_only": loser_only,
+    "both_winner_and_loser": both,
+    "unresolved": unresolved,
+  }
+  with open("runs.csv", "a", newline="") as runs_file:
+    csv.DictWriter(runs_file, fieldnames=RUN_FIELDNAMES).writerow(row)
