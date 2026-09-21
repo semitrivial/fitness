@@ -298,7 +298,12 @@ We make the following observations:
     \item $\mathsf{Insanity}$ food was worse than normal food but not as bad
         as any of the sterility side-effect foods.
     \item $\mathsf{Shortsighted}$ food, surprisingly, had virtually the exact
-        same fitness as $\mathsf{Normal}$ food.
+        % Below footnote inspired by conversation w/blank-w9t
+        same fitness as $\mathsf{Normal}$ food\footnote{Because of the large
+        sample size, we can be statistically quite confident that there is
+        \emph{some} penalty associated with $\mathsf{Shortsighted}$ food,
+        but that penalty, despite our confidence in it existing, is
+        nevertheless very small.}.
 \end{enumerate}
 
 Most of these findings are unsurprising. The $0$ fitness of the
@@ -345,15 +350,17 @@ having more children is actually detrimental to fitness. This is presumably
 due to the simulation's unique crowding mechanism which we discussed above:
 successful reproduction requires privacy, and by having too many children,
 one interferes with one's already-existing children being able to achieve
-such privacy.
+such privacy. However, we would note that very few organisms have those higher
+number of children where the slope becomes negative (see
+Table \ref{tab:winner-loser-counts-by-children}).
 
 \begin{figure}
-    \label{childrencountfigure}
     \begin{center}
         \includegraphics[scale=.75]{winner_ratio_by_children.pdf}
     \end{center}
     \caption{Fitness (as calculated using our new methodology) as a function
     of total number of children given birth to in an organism's lifetime}
+    \label{childrencountfigure}
 \end{figure}
 
 Note the third-from-final point in the figure has an unexpected drop.
