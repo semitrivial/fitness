@@ -5,6 +5,16 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "fit"
 version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = [
+    "duckdb>=1.4,<2",
+    "matplotlib>=3.9,<4",
+    "numpy>=2,<3",
+    "scipy>=1.13,<2",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<9"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
