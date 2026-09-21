@@ -70,11 +70,12 @@ def one_turn():
 
   repopulate_food()
 
-  for actor in actor_list:
-    if actor.isDead:
-      continue
-    new_obs = gen_obs(actor)
-    driver.train(actor.prev_obs, actor.prev_act, actor.prev_reward, new_obs)
+  if not(driver.training_disabled):
+    for actor in actor_list:
+      if actor.isDead:
+        continue
+      new_obs = gen_obs(actor)
+      driver.train(actor.prev_obs, actor.prev_act, actor.prev_reward, new_obs)
 
   update_winners_and_losers()
 
