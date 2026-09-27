@@ -54,7 +54,7 @@ fertile grandchildren), which would also make one manifestly unfit. Delaying
 the calculation any number of generations runs into the same problem.
 
 To be clear, the problem does not merely arise in situations like ``all of this
-organism's children are sterile,'' which may seem contrived.
+organism's children are sterile,'' which situations may seem contrived.
 The problem can arise in very realistic scenarios. For example, as noted by
 \cite{alexander2021can},
 organisms could inhabit an environment which very rarely suffers from heatwaves.
@@ -116,7 +116,11 @@ The roadmap of this paper is as follows:
 \label{theoryscn}
 
 The so-called \emph{identical ancestor point axiom} states that any species can be
-partitioned into so-called \emph{winners} and \emph{losers}, defined in the
+divided into\footnote{The division into winners and losers is a partition
+iff the species does not go extinct. If the species does eventually go
+extinct, then every organism is a loser and (vacuously) also a winner.
+The methodology is primarily intended for theoretical work, where we can,
+as \emph{simplifying assumption}, assume that species do not go extinct.} so-called \emph{winners} and \emph{losers}, defined in the
 Introduction. This is not useful for studying the fitness of any particular
 organism, because any particular organism is either a winner or a loser within
 its species, and so would be given fitness value of either $0$ or $1$, which is
@@ -146,9 +150,9 @@ evolutionarily fit than eating poisonous mushrooms.
 % Following paragraph inspired by discussion w/blank-w9t
 As a special case, we could consider the fitness of singletons, i.e.,
 of individual organisms. However, restricted to individual organisms,
-fitness, measures this way, is a boolean variable. If the organism is
+fitness, measured this way, is a boolean variable. If the organism is
 a winner then it has fitness $1$, and if it is a loser, then it has
-fitness $0$.
+fitness $0$. So the measure is not very useful when applied to singletons.
 
 \section{A python simulation}
 \label{simulationsecn}
