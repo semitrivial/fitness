@@ -115,6 +115,7 @@ The roadmap of this paper is as follows:
 \section{Theory behind this new methodology}
 \label{theoryscn}
 
+
 The so-called \emph{identical ancestor point axiom} states that any species can be
 divided into\footnote{The division into winners and losers is a partition
 iff the species does not go extinct. If the species does eventually go
@@ -126,6 +127,24 @@ organism, because any particular organism is either a winner or a loser within
 its species, and so would be given fitness value of either $0$ or $1$, which is
 too granular to be of any use. Thus, we instead measure the fitness of sets of
 organisms in a species.
+
+This winner/loser notion
+is crucial for our methodology, but at first glance,
+it seems only useful for idealized species
+that don't go extinct. For, if a species goes extinct, then all its
+members are winners \emph{and} losers\footnote{Losers because their
+descendants in the species go extinct; winners because after the
+species has gone extinct, vacuously all living members are their
+descendants. For example, if the human species goes extinct in the
+year 3000 then we can truthfully say that in the year 3001, every
+living human is this author's descendant---it is vacuously true
+since there are no living humans in 3001.}. However,
+as the empirical evidence below demonstrates, the methodology can
+effectively be applied to more realistic species if we have data
+over a time interval long relative to the time
+required for mixing, but short enough to avoid extinction.
+In that case, we can simply pretend that the species continues forever
+beyond our data set.
 
 Sets of organisms correspond naturally to actions, in the sense that
 to any action, we can associate the set of organisms who take that action.
@@ -255,10 +274,10 @@ Frt should be read as ``fertility bonus''):
 \section{Empirical results from the simulation}
 \label{empiricalsecn}
 
-We ran the simulation 2488 times, terminating each run after 100,000 turns
+We ran the simulation 3123 times, terminating each run after 100,000 turns
 if the species did not go extinct before then. Of the runs where the species
 went extinct, extinction always occurred very early: if the species survived
-more than 200 turns, then it never was observed to go extinct before 100,000
+more than 300 turns, then it never was observed to go extinct before 100,000
 turns.
 
 For each non-extinct run, we tracked which organisms were winners and which
