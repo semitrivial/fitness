@@ -117,11 +117,8 @@ The roadmap of this paper is as follows:
 
 
 The so-called \emph{identical ancestor point axiom} states that any species can be
-divided into\footnote{The division into winners and losers is a partition
-iff the species does not go extinct. If the species does eventually go
-extinct, then every organism is a loser and (vacuously) also a winner.
-The methodology is primarily intended for theoretical work, where we can,
-as \emph{simplifying assumption}, assume that species do not go extinct.} so-called \emph{winners} and \emph{losers}, defined in the
+divided into
+so-called \emph{winners} and \emph{losers}, defined in the
 Introduction. This is not useful for studying the fitness of any particular
 organism, because any particular organism is either a winner or a loser within
 its species, and so would be given fitness value of either $0$ or $1$, which is
@@ -274,157 +271,273 @@ Frt should be read as ``fertility bonus''):
 \section{Empirical results from the simulation}
 \label{empiricalsecn}
 
-We ran the simulation 3123 times, terminating each run after 100,000 turns
-if the species did not go extinct before then. Of the runs where the species
-went extinct, extinction always occurred very early: if the species survived
-more than 300 turns, then it never was observed to go extinct before 100,000
-turns.
+\subsection{Data and estimates}
 
-For each non-extinct run, we tracked which organisms were winners and which
-organisms were losers by the time we terminated the run. For some organisms born
-late in the run, there was not enough time to determine their winner/loser
-status (they had living descendants and living non-descendants at the time
-when the run was terminated). These organisms were discarded for purposes of
-statistical analysis. From the organisms not discarded, we calculated fitness
-scores for each food type, and also for each childcount. The food type fitness
-scores we calculated are as follows:
+We ran the simulation $3{,}123$ times, one run per random seed, stopping each
+run after $100{,}000$ turns. $393$ runs ($12.6\%$) went extinct, always early:
+the mean extinction time was $128$ turns and the latest was turn $262$.
+Extinct runs are tiny (on average $18.8$ organisms were ever created in one).
+They also cannot be analysed with the rest. When the last organism of a run
+dies, every organism in that run satisfies the definition of a winner, and
+this produced the only organisms in the whole dataset flagged as both winners
+and losers ($6{,}217$). It also produced the only ``winners'' who had eaten
+sterilizing food. We therefore report results for the $2{,}730$ runs that
+survived all $100{,}000$ turns.
+
+These runs produced $752{,}304{,}437$ organisms. Of these, $749{,}077{,}401$
+were resolved as either a winner or a loser by the end of the run, and
+$3{,}227{,}036$ ($0.43\%$) were still unresolved. Resolution happens quickly:
+every resolved organism in the data was resolved within $209$ turns of its
+birth. The median time from birth to resolution was $80$ turns for losers
+and $106$ turns for winners. Unresolved organisms were therefore born in the
+last few hundred turns of a run, and we exclude them. This exclusion is not
+harmless for organisms born near the end, because a late-born organism is only
+resolved if it loses quickly (see Section \ref{sec:time-blocks}).
+
+For a set $S$ of resolved organisms, the fitness of $S$ is the proportion of
+winners in $S$. For a food type, $S$ is the set of organisms that ate that food
+at least once during their lifetime. These sets overlap, since an organism may
+eat several food types.
+
+\subsection{Uncertainty}
+
+Organisms within a run share ancestors and an environment, so they are not
+independent observations. We therefore computed confidence intervals by
+resampling whole runs (a cluster bootstrap with $2{,}000$ resamples). We also
+repeated this with clusters defined by run \emph{and} $5{,}000$-turn window of
+birth,
+%(following a suggestion from blank-w9t),
+to allow for correlation among
+organisms born around the same time. The clustering turned out to matter very
+little. The ratio of the cluster-bootstrap variance to the naive binomial
+variance (the \emph{design effect}) was between $0.9$ and $1.2$ for every
+food type. Because the sample is so large, the intervals below are narrow. We
+stress that a narrow interval only says a difference is real \emph{in this
+simulation}; it does not say the difference is large.
+
+\subsection{Fitness by food type}
 
 \begin{table}[ht]
     \centering
-    \caption{Evolutionary fitness scores by food type.}
+    \caption{Fitness by food type, $2{,}730$ surviving runs. Eaters are
+    organisms that ate the food at least once. The 95\% intervals come from
+    resampling whole runs.}
     \label{tab:fitness-by-food}
-    \begin{tabular}{lr}
+    \begin{tabular}{lrrl}
         \hline
-        Food type & Evolutionary fitness score \\
+        Food type & Resolved eaters & Fitness & 95\% interval \\
         \hline
-        $\mathsf{Normal}$ & 0.7658836489 \\
-        $\mathsf{StrlFutDescs}$ & 0.4764546404 \\
-        $\mathsf{StrlAllDescs}$ & 0.0000000000 \\
-        $\mathsf{StrlFutDescsFrt}$ & 0.4748666463 \\
-        $\mathsf{StrlAllDescsFrt}$ & 0.0000000000 \\
-        $\mathsf{Frt}$ & 0.8214282319 \\
-        $\mathsf{Insanity}$ & 0.6727775267 \\
-        $\mathsf{Shortsighted}$ & 0.7658694215 \\
+        $\mathsf{Frt}$ & 2,555,780 & 0.8223 & [0.8218, 0.8227] \\
+        $\mathsf{Normal}$ & 32,528,920 & 0.7672 & [0.7671, 0.7674] \\
+        $\mathsf{Shortsighted}$ & 2,559,004 & 0.7649 & [0.7644, 0.7654] \\
+        $\mathsf{Insanity}$ & 2,562,566 & 0.6699 & [0.6693, 0.6705] \\
+        $\mathsf{StrlFutDescs}$ & 2,560,237 & 0.4776 & [0.4770, 0.4782] \\
+        $\mathsf{StrlFutDescsFrt}$ & 2,558,715 & 0.4768 & [0.4762, 0.4774] \\
+        $\mathsf{StrlAllDescs}$ & 2,564,553 & 0 & (no winners) \\
+        $\mathsf{StrlAllDescsFrt}$ & 2,564,675 & 0 & (no winners) \\
+        \hline
+        No food eaten & 699,503,252 & 0.7788 & \\
         \hline
     \end{tabular}
 \end{table}
 
-We make the following observations:
-\begin{enumerate}
-    \item $\mathsf{Normal}$ food is more fit than any food type with any detrimental effect.
-    \item $\mathsf{Frt}$ food is the most fit of all the foods.
-    \item $\mathsf{StrlAllDescs}$ and $\mathsf{StrlAllDescsBonus}$ had
-        fitness scores of $0$.
-    \item $\mathsf{StrlFutDescs}$ and $\mathsf{StrlFutDescsFrt}$ had
-        almost identical fitness scores, the latter being slightly smaller
-        than the former.
-    \item $\mathsf{Insanity}$ food was worse than normal food but not as bad
-        as any of the sterility side-effect foods.
-    \item $\mathsf{Shortsighted}$ food, surprisingly, had virtually the exact
-        % Below footnote inspired by conversation w/blank-w9t
-        same fitness as $\mathsf{Normal}$ food\footnote{Because of the large
-        sample size, we can be statistically quite confident that there is
-        \emph{some} penalty associated with $\mathsf{Shortsighted}$ food,
-        but that penalty, despite our confidence in it existing, is
-        nevertheless very small.}.
-\end{enumerate}
-
-Most of these findings are unsurprising. The $0$ fitness of the
-foods which confer sterility to all descendants corresponds to the fact that
-eating such foods guarantees one will become a loser, regardless of how fertile
-one is. This empirically confirms our observation in the Introduction that
-having many sterile children (and no non-sterile children) is inherently unfit,
-contrary to the naive approach of measuring fitness solely by counting
-offspring.
-
-The following findings are rather surprising:
+Table \ref{tab:fitness-by-food} gives the fitness of each food type. Because
+every run contains eaters of every food, we can also compare two foods
+\emph{within} each run and then average over runs. These within-run
+comparisons, with bootstrap intervals over runs, are:
 \begin{itemize}
-    \item $\mathsf{StrlFutDescs}$ actually outperforms
-        $\mathsf{StrlFutDescsFtl}$. The amount by which it outperforms
-        is quite small; this could just be a statistical fluke.
-        But it does make sense that $\mathsf{StrlFutDescs}$ would outperform,
-        because of the way reproduction works in the simulation, as remarked
-        in the previous section. When one eats food which makes one's future
-        descendants become sterile, and also grants one a fertility bonus
-        (so that one can more prolifically produce such sterile future children),
-        this is detrimental to any non-sterile children one has already
-        produced before eating the food. The greater abundance of sterile
-        children resulting from the fertility bonus compete with the
-        fertile children born before the food was eaten.
-    \item $\mathsf{Shortsighted}$ food seems to have the same fitness as
-        $\mathsf{Normal}$ food. We cannot see any way of explaining this,
-        except merely that it turns out the longer line of sight was not
-        actually beneficial in the environment in question. This illustrates
-        that these fitness scores can reveal facts which are not evident
-        at first glance. In this case, the fitness scores reveal that
-        the superior vision of organisms that did not eat $\mathsf{Shortsighted}$
-        food is not actually that helpful. Of course this would not generalize
-        to arbitrary environments; it is an artifact of the particular laws
-        of physics in our simulation.
+    \item $\mathsf{Frt}$ minus $\mathsf{Normal}$: $+0.0551$ $[+0.0546, +0.0556]$.
+        $\mathsf{Frt}$ was higher in all $2{,}730$ runs.
+    \item $\mathsf{Normal}$ minus $\mathsf{Insanity}$: $+0.0973$ $[+0.0967, +0.0979]$.
+        $\mathsf{Normal}$ was higher in all $2{,}730$ runs.
+    \item $\mathsf{Normal}$ minus $\mathsf{Shortsighted}$: $+0.0023$ $[+0.0017, +0.0028]$.
+        $\mathsf{Normal}$ was higher in only $55.7\%$ of runs.
+    \item $\mathsf{StrlFutDescs}$ minus $\mathsf{StrlFutDescsFrt}$: $+0.0008$
+        $[-0.0000, +0.0017]$. $\mathsf{StrlFutDescs}$ was higher in $51.8\%$ of runs.
 \end{itemize}
 
-It is also interesting to compute fitness scores for the act of ``having $n$
-children'' as $n$ varies. We see from Figure \ref{childrencountfigure}
-that in this particular
-simulated environment, the slope of the fitness-vs.-childcount curve is
-initially very positive, but that later on (i.e., with higher childcount),
-said slope actually becomes slightly negative. After a certain point,
-having more children is actually detrimental to fitness. This is presumably
-due to the simulation's unique crowding mechanism which we discussed above:
-successful reproduction requires privacy, and by having too many children,
-one interferes with one's already-existing children being able to achieve
-such privacy. However, we would note that very few organisms have those higher
-number of children where the slope becomes negative (see
-Table \ref{tab:winner-loser-counts-by-children}).
+We draw the following conclusions.
+\begin{enumerate}
+    \item Every food that permanently sterilizes all of the eater's descendants
+        has fitness exactly $0$ in surviving runs; there is not a single
+        winner among $5.1$ million such eaters. This is the clearest
+        demonstration of the point made in the Introduction. Eaters of
+        $\mathsf{StrlAllDescsFrt}$ have extra fertility, yet their fitness is
+        as low as it can possibly be.
+    \item The ranking $\mathsf{Frt} > \mathsf{Normal} > \mathsf{Insanity} >
+        \mathsf{StrlFutDescs} > \mathsf{StrlAllDescs}$ is not a fluke of
+        pooling many runs together. In particular, $\mathsf{Frt}$ beat
+        $\mathsf{Normal}$, and $\mathsf{Normal}$ beat $\mathsf{Insanity}$,
+        in every single run.
+    \item $\mathsf{Shortsighted}$ food carries a real but very small penalty,
+        about a quarter of a percentage point. The penalty is detectable only
+        because the dataset is very large. In a single run it goes the
+        ``wrong'' way almost half the time.
+    \item We cannot distinguish $\mathsf{StrlFutDescs}$ from
+        $\mathsf{StrlFutDescsFrt}$. This indicates that the fertility bonus
+        does not improve fitness, even though eats of that food have more
+        children. This is consistent with what we said in the Introduction.
+\end{enumerate}
 
+\paragraph{A caveat: who eats.}
+These scores should not be read as the causal effect of eating a food.
+Consider the last row of Table \ref{tab:fitness-by-food}: organisms that never
+ate anything have fitness $0.7788$, slightly \emph{higher} than eaters of
+$\mathsf{Normal}$ food ($0.7672$). Normal food has no effect beyond ordinary
+satiation, so this gap cannot come from the food itself. It comes from
+differences between the organisms that happen to eat and those that do not
+(for instance, how they move, how long they live, and where they tend to be).
+We call this \emph{selection}: the fitness score of an action reflects both
+the consequences of the action and the kind of organism that takes it. In our
+view this is correct for the methodology, which measures the fitness of a
+\emph{set of organisms}, not the effect of an intervention. But it means
+fitness scores are best compared with one another, with $\mathsf{Normal}$ as
+the natural reference point, and not read as absolute effects. Restricting
+attention to organisms that ate only one kind of non-normal food changes each
+score by less than $0.01$ and does not change the ranking.
+
+\subsection{Timing matters}
+\label{sec:timing}
+
+For some foods the fitness score averages over very different situations. To
+show this, we took a subsample of $304$ surviving runs (every ninth surviving
+run; roughly $285$ thousand eaters of each non-normal food). There we
+reconstructed every organism's children from the recorded parent identifiers
+and asked whether the organism first ate a given food before or after the
+birth of its first child. The results are in Table \ref{tab:timing}.
+
+\begin{table}[ht]
+    \centering
+    \caption{Fitness by when the food was first eaten relative to the eater's
+    first child ($304$ surviving runs). Eaters who never had children always
+    have fitness $0$ and are omitted.}
+    \label{tab:timing}
+    \begin{tabular}{lrrrr}
+        \hline
+        & \multicolumn{2}{c}{Eaten before first child}
+        & \multicolumn{2}{c}{Eaten after first child} \\
+        Food type & $n$ & Fitness & $n$ & Fitness \\
+        \hline
+        $\mathsf{Normal}$ & 1,051,721 & 0.8725 & 2,040,088 & 0.9122 \\
+        $\mathsf{Frt}$ & 93,847 & 0.9035 & 160,802 & 0.9267 \\
+        $\mathsf{Shortsighted}$ & 80,630 & 0.8727 & 161,399 & 0.9119 \\
+        $\mathsf{Insanity}$ & 56,666 & 0.8314 & 161,301 & 0.8910 \\
+        $\mathsf{StrlFutDescs}$ & 81,861 & 0.0000 & 161,283 & 0.8456 \\
+        $\mathsf{StrlFutDescsFrt}$ & 93,962 & 0.0000 & 161,139 & 0.8430 \\
+        $\mathsf{StrlAllDescs}$ & 81,927 & 0 & 161,917 & 0 \\
+        $\mathsf{StrlAllDescsFrt}$ & 94,771 & 0 & 161,347 & 0 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+For every food, eating ``late'' goes with higher fitness, even for
+$\mathsf{Normal}$ food ($0.87$ vs.\ $0.91$). This is because organisms that
+reproduce early and often tend to be winners. Against this background, the
+two sterilizing-future-descendants foods stand out. Eaten before any
+reproduction, they are fatal to fitness (no winners among $175$ thousand
+eaters). Eaten after the first child, they cost only about $7$ percentage
+points relative to $\mathsf{Normal}$. The headline score of about $0.48$ is
+therefore a mixture of two very different populations. This illustrates
+something the methodology captures naturally and a naive offspring count
+does not: the fitness of an action depends on the circumstances in which it is
+taken.
+
+
+\subsection{Stability over time}
+\label{sec:time-blocks}
+
+The Q-learner was frozen before the runs used here, so the organisms' behaviour
+does not change over time within a run. Consistent with this, fitness scores are
+flat across the run. In each $5{,}000$-turn window of birth from turn $5{,}000$ to
+turn $95{,}000$, $\mathsf{Normal}$ fitness stays between $0.7676$ and $0.7692$,
+and the other foods are similarly stable. The two edge windows are the
+exception.
+\begin{itemize}
+    \item Organisms born in turns $0$--$5{,}000$ are slightly less fit
+        ($\mathsf{Normal}$: $0.7643$). This presumably reflects a start-up period in
+        which the population is still settling down from its random initial
+        state.
+    \item Organisms born in turns $95{,}000$--$100{,}000$ are noticeably less
+        fit ($\mathsf{Normal}$: $0.7519$). This is due to a truncation effect:
+        an organism born near the end of a run is only counted if it
+        is resolved in time. Losing is quicker than winning, so losers are
+        over-represented here.
+\end{itemize}
+If both edge windows are dropped, every fitness score in
+Table \ref{tab:fitness-by-food} moves by at most $0.0015$
+(e.g.\ $\mathsf{Normal}$ $0.7682$, $\mathsf{Shortsighted}$ $0.7663$,
+$\mathsf{StrlFutDescs}$ $0.4791$, $\mathsf{StrlFutDescsFrt}$ $0.4782$), and the
+ranking is unchanged.
+
+\subsection{Fitness by number of children}
+
+We can also compute the fitness of the set of organisms that had exactly $n$
+children in their lifetime (Figure \ref{childrencountfigure} and
+Table \ref{tab:winner-loser-counts-by-children}). Organisms with no children
+have fitness $0$ by definition. Fitness rises steeply from $0.764$ (one child)
+to $0.937$ (two) and $0.976$ (three). It peaks at five children ($0.9870$,
+95\% interval $[0.9870, 0.9871]$). After that it declines slowly, to $0.9770$
+$[0.9750, 0.9789]$ at ten. The decline from five to ten children is well
+outside sampling error, but it is only one percentage point. It also affects
+few organisms: $1.6\%$ of resolved organisms had six or more children, and
+$0.1\%$ had eight or more. Beyond ten children, the intervals are too wide to
+say anything about the shape of the curve. The organisms with $14$ or more
+children ($169$ in total, only one of them a loser) are pooled in the table
+and figure.
+
+We believe the decline is caused by the crowding rule of
+Section \ref{simulationsecn}. The number of children is itself
+an outcome of an organism's life, not a choice made independently of it, so
+Figure \ref{childrencountfigure} shows an association, not a dose-response
+relationship. What it does show clearly is that the naive view ``more children
+means more fitness'' breaks down beyond about five children. For most
+organisms, however, the first two or three children matter far more than any
+later ones.
 
 \begin{figure}
     \begin{center}
-        \includegraphics[scale=.75]{winner_ratio_by_children.pdf}
+        \includegraphics[width=\textwidth]{fitness_by_children.pdf}
     \end{center}
-    \caption{Fitness (as calculated using our new methodology) as a function
-    of total number of children given birth to in an organism's lifetime}
+    \caption{Fitness as a function of the number of children an organism had,
+    in the $2{,}730$ surviving runs, with 95\% Wilson intervals. Organisms
+    with $14$ or more children are pooled. The right panel magnifies the range
+    from three children upward.}
     \label{childrencountfigure}
 \end{figure}
 
-Note the third-from-final point in the figure has an unexpected drop.
-This is because very few organisms had that many children. The numbers
-of organisms with each childcount are given in
-Table \ref{tab:winner-loser-counts-by-children}.
-
 \begin{table}[ht]
     \centering
-    \caption{Winner and loser counts by number of children.}
+    \caption{Winners and losers by number of children, $2{,}730$ surviving runs.}
     \label{tab:winner-loser-counts-by-children}
-    \begin{tabular}{rrr}
+    \begin{tabular}{rrrr}
         \hline
-        Number of children & Winners & Losers \\
+        Number of children & Winners & Losers & Fitness \\
         \hline
-        0 & 0 & 91,869,632 \\
-        1 & 124,694,671 & 38,855,297 \\
-        2 & 158,831,471 & 10,861,096 \\
-        3 & 113,186,996 & 2,816,873 \\
-        4 & 57,615,388 & 878,556 \\
-        5 & 22,889,365 & 308,922 \\
-        6 & 7,433,068 & 103,229 \\
-        7 & 2,037,246 & 30,919 \\
-        8 & 482,937 & 8,344 \\
-        9 & 102,202 & 2,054 \\
-        10 & 20,623 & 525 \\
-        11 & 4,556 & 134 \\
-        12 & 1,301 & 40 \\
-        13 & 512 & 26 \\
-        14 & 230 & 7 \\
-        15 & 116 & 4 \\
-        16 & 58 & 4 \\
-        17 & 29 & 0 \\
-        18 & 7 & 0 \\
-        19 & 4 & 2 \\
-        20 & 1 & 0 \\
-        21 & 1 & 0 \\
+        0 & 0 & 108,233,010 & 0.0000 \\
+        1 & 148,004,449 & 45,741,321 & 0.7639 \\
+        2 & 188,413,945 & 12,715,892 & 0.9368 \\
+        3 & 134,166,818 & 3,270,658 & 0.9762 \\
+        4 & 68,187,821 & 1,020,505 & 0.9853 \\
+        5 & 26,988,346 & 354,819 & 0.9870 \\
+        6 & 8,729,454 & 118,757 & 0.9866 \\
+        7 & 2,378,447 & 34,842 & 0.9856 \\
+        8 & 559,514 & 9,348 & 0.9836 \\
+        9 & 117,579 & 2,167 & 0.9819 \\
+        10 & 22,915 & 539 & 0.9770 \\
+        11 & 4,567 & 104 & 0.9777 \\
+        12 & 1,067 & 23 & 0.9789 \\
+        13 & 318 & 7 & 0.9785 \\
+        14+ & 168 & 1 & 0.9941 \\
         \hline
     \end{tabular}
 \end{table}
+
+\subsection{Reproducibility}
+
+All numbers in this section were computed with the scripts in
+\texttt{stats/exploration/} of the accompanying repository. These scripts read
+a columnar (Parquet) copy of the raw simulation output, which is produced by
+\texttt{stats/analyze\_new\_export.py}.
 
 \section{Summary and conclusion}
 \label{summarysecn}
