@@ -1,0 +1,83 @@
+ADVANCED FITNESS-SIMULATION ANALYSIS
+
+Scope and inferential limitations
+---------------------------------
+Rows represented: 633,036,446
+Unambiguous winner/loser rows analyzed: 633,036,446
+Winner only: 487,300,782
+Loser only: 145,735,664
+Both winner and loser (excluded from models): 0
+Neither (excluded from models): 0
+
+Organism rows are not independent simulation replicates. The current export
+has no run/seed identifier, so p-values and intervals below are organism-level
+descriptions and are likely much too confident for run-level inference.
+
+num_children is downstream of reproduction and closely connected to the
+winner definition. Its model is a descriptive sensitivity analysis, not an
+independent or causal explanation of winning.
+
+Marginal food associations
+--------------------------
+StrlAllDescs: P(win|ate)=0.000000, P(win|not)=0.772489, risk difference=-0.772489, OR=6.6423e-08 [4.1545e-09, 1.062e-06], p=<1e-300
+StrlAllDescsBonus: P(win|ate)=0.000000, P(win|not)=0.772488, risk difference=-0.772488, OR=6.6439e-08 [4.1555e-09, 1.0622e-06], p=<1e-300
+StrlFutDescsBonus: P(win|ate)=0.474867, P(win|not)=0.770819, risk difference=-0.295952, OR=0.26886 [0.26815, 0.26957], p=<1e-300
+StrlFutDescs: P(win|ate)=0.476455, P(win|not)=0.770812, risk difference=-0.294357, OR=0.27059 [0.26987, 0.27131], p=<1e-300
+Insanity: P(win|ate)=0.672778, P(win|not)=0.770124, risk difference=-0.097346, OR=0.61371 [0.61198, 0.61544], p=<1e-300
+FrtlBonus: P(win|ate)=0.821428, P(win|not)=0.769602, risk difference=+0.051826, OR=1.3771 [1.3724, 1.3819], p=<1e-300
+Normal: P(win|ate)=0.765884, P(win|not)=0.769964, risk difference=-0.004081, OR=0.97736 [0.97649, 0.97824], p=<1e-300
+Shortsighted: P(win|ate)=0.765869, P(win|not)=0.769797, risk difference=-0.003927, OR=0.97821 [0.97517, 0.98126], p=1.06e-43
+
+Offspring count by food exposure
+--------------------------------
+Insanity: mean children ate=1.531710, did not eat=2.001165, difference=-0.469455
+FrtlBonus: mean children ate=2.445818, did not eat=1.997959, difference=+0.447859
+StrlFutDescsBonus: mean children ate=2.399734, did not eat=1.998117, difference=+0.401617
+StrlAllDescsBonus: mean children ate=2.396867, did not eat=1.998126, difference=+0.398741
+StrlAllDescs: mean children ate=1.977553, did not eat=1.999599, difference=-0.022047
+StrlFutDescs: mean children ate=1.981651, did not eat=1.999585, difference=-0.017934
+Shortsighted: mean children ate=1.983170, did not eat=1.999580, difference=-0.016410
+Normal: mean children ate=1.998005, did not eat=1.999593, difference=-0.001588
+
+Adjusted food model
+-------------------
+StrlAllDescs: adjusted OR=1.7277e-06 [1.0283e-06, 2.903e-06]
+StrlAllDescsBonus: adjusted OR=1.7281e-06 [1.0285e-06, 2.9037e-06]
+StrlFutDescsBonus: adjusted OR=0.26373 [0.26303, 0.26443]
+StrlFutDescs: adjusted OR=0.26536 [0.26466, 0.26607]
+Insanity: adjusted OR=0.59761 [0.59592, 0.5993]
+FrtlBonus: adjusted OR=1.3979 [1.3929, 1.403]
+Shortsighted: adjusted OR=0.96268 [0.95966, 0.96571]
+Normal: adjusted OR=0.97671 [0.97582, 0.9776]
+Interactions are reported in adjusted_food_model.csv.
+
+Strongest food co-occurrences
+-----------------------------
+Normal + Insanity: phi=-0.006027, Jaccard=0.001717
+Normal + Shortsighted: phi=-0.004069, Jaccard=0.002216
+Insanity + Shortsighted: phi=-0.002822, Jaccard=0.000344
+StrlFutDescs + Insanity: phi=-0.001698, Jaccard=0.000903
+StrlFutDescsBonus + Insanity: phi=-0.001680, Jaccard=0.000913
+StrlAllDescs + Insanity: phi=-0.001674, Jaccard=0.000917
+FrtlBonus + Insanity: phi=-0.001661, Jaccard=0.000920
+StrlAllDescsBonus + Insanity: phi=-0.001651, Jaccard=0.000928
+
+Winner probability by offspring band
+------------------------------------
+0 children: 0.000000 (n=91,869,632)
+1 children: 0.762426 (n=163,549,968)
+2 children: 0.935995 (n=169,692,567)
+3 children: 0.975717 (n=116,003,869)
+4-5 children: 0.985464 (n=81,692,231)
+6-10 children: 0.985807 (n=10,221,147)
+11+ children: 0.969141 (n=7,032)
+
+Model notes
+-----------
+The adjusted models are grouped-binomial logistic regressions with an L2
+ridge penalty. This keeps estimates finite under complete separation.
+Their Wald intervals and p-values are approximate and should not be treated
+as a substitute for run-clustered or hierarchical inference.
+Food-only model converged: True
+Food-plus-children model converged: True
+Food tests use Benjamini-Hochberg FDR correction; see food_associations.csv.
