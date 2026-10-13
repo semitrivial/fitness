@@ -517,6 +517,24 @@ later ones.
     \end{tabular}
 \end{table}
 
+\subsection{Fitness scores can yield unexpected insight into behaviour}
+
+When we programmed the simulation behind these results, we did not expect
+that the $\mathsf{Shortsighted}$ food would be so close to $\mathsf{Normal}$ food.
+Since eating $\mathsf{Shortsighted}$ food causes an organism to
+become short-sighted,
+we expected that the fitness of eating such food would be much more significantly
+reduced. But the experimental evidence shows this is not the case.
+Of course this does not tell us anything about the pros or cons of being
+short-sighted \emph{in general}, but only in this particular type of simulation:
+it shows us that in this particular type of simulation, agents driven by this
+particular RL agent, do not benefit from extended vision.
+This
+illustrates one benefit of calculating fitness scores: it can give us unexpected
+insight into an environment in various ways. We speculate that if it were
+possible to calculate fitness scores for actions that we humans perform,
+some of the scores would probably be quite surprising.
+
 \subsection{Reproducibility}
 
 All numbers in this section were computed with the scripts in
