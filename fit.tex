@@ -358,12 +358,12 @@ comparisons, with bootstrap intervals over runs, are:
 
 We draw the following conclusions.
 \begin{enumerate}
-    \item Every food that permanently sterilizes all of the eater's descendants
-        has fitness exactly $0$ in surviving runs; there is not a single
-        winner among $5.1$ million such eaters. This is the clearest
-        demonstration of the point made in the Introduction. Eaters of
-        $\mathsf{StrlAllDescsFrt}$ have extra fertility, yet their fitness is
-        as low as it can possibly be.
+    \item As expected, every food that permanently sterilizes all of the
+    eater's descendants
+        has fitness exactly $0$ in surviving runs. This
+        illustrates the point we made in the Introduction. Even the extra
+        fertility granted by eating
+        $\mathsf{StrlAllDescsFrt}$ does not help.
     \item The ranking $\mathsf{Frt} > \mathsf{Normal} > \mathsf{Insanity} >
         \mathsf{StrlFutDescs} > \mathsf{StrlAllDescs}$ is not a fluke of
         pooling many runs together. In particular, $\mathsf{Frt}$ beat
@@ -375,26 +375,11 @@ We draw the following conclusions.
         ``wrong'' way almost half the time.
     \item We cannot distinguish $\mathsf{StrlFutDescs}$ from
         $\mathsf{StrlFutDescsFrt}$. This indicates that the fertility bonus
-        does not improve fitness, even though eats of that food have more
+        does not improve fitness, even though eaters of that food have more
         children. This is consistent with what we said in the Introduction.
 \end{enumerate}
 
-\paragraph{A caveat: who eats.}
-These scores should not be read as the causal effect of eating a food.
-Consider the last row of Table \ref{tab:fitness-by-food}: organisms that never
-ate anything have fitness $0.7788$, slightly \emph{higher} than eaters of
-$\mathsf{Normal}$ food ($0.7672$). Normal food has no effect beyond ordinary
-satiation, so this gap cannot come from the food itself. It comes from
-differences between the organisms that happen to eat and those that do not
-(for instance, how they move, how long they live, and where they tend to be).
-We call this \emph{selection}: the fitness score of an action reflects both
-the consequences of the action and the kind of organism that takes it. In our
-view this is correct for the methodology, which measures the fitness of a
-\emph{set of organisms}, not the effect of an intervention. But it means
-fitness scores are best compared with one another, with $\mathsf{Normal}$ as
-the natural reference point, and not read as absolute effects. Restricting
-attention to organisms that ate only one kind of non-normal food changes each
-score by less than $0.01$ and does not change the ranking.
+
 
 \subsection{Timing matters}
 \label{sec:timing}
