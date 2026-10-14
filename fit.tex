@@ -112,6 +112,16 @@ The roadmap of this paper is as follows:
     In Section \ref{summarysecn}, we summarize and make concluding remarks.
 \end{itemize}
 
+\subsection{AI Disclosure}
+
+Most of Section \ref{empiricalsecn} was written by an AI, as this author
+is not a statistician. The statistical results in Section 4 were computed
+by an AI. The simulations themselves, from which the statistics were derived,
+were programmed almost entirely by hand (the main exception being those parts
+of the code which logged statistical data for later analysis). The writing
+of the paper, and of the simulation code, were livestreamed, providing evidence
+that the above statements are true.
+
 \section{Theory behind this new methodology}
 \label{theoryscn}
 
@@ -169,6 +179,17 @@ of individual organisms. However, restricted to individual organisms,
 fitness, measured this way, is a boolean variable. If the organism is
 a winner then it has fitness $1$, and if it is a loser, then it has
 fitness $0$. So the measure is not very useful when applied to singletons.
+
+% Following paragraph is thanks to MykytaSiryk
+We emphasize that the notions of winner and loser are purely genealogical,
+and have nothing to do with genetics. It could be that at some future date,
+all living humans will be genealogical descendants of, say, Genghis Khan,
+but that does not necessarily imply that even a single one of them will
+actually share any of
+Genghis Khan's genes. Indeed, Gravel and Steel showed that such ``ghost
+ancestors'' (ancestors of the entire species after some point, yet
+having no genetic descendants) are surprisingly very
+common \cite{gravel2015existence}.
 
 \section{A python simulation}
 \label{simulationsecn}
@@ -407,8 +428,8 @@ birth of its first child. The results are in Table \ref{tab:timing}.
         $\mathsf{Frt}$ & 93,847 & 0.9035 & 160,802 & 0.9267 \\
         $\mathsf{Shortsighted}$ & 80,630 & 0.8727 & 161,399 & 0.9119 \\
         $\mathsf{Insanity}$ & 56,666 & 0.8314 & 161,301 & 0.8910 \\
-        $\mathsf{StrlFutDescs}$ & 81,861 & 0.0000 & 161,283 & 0.8456 \\
-        $\mathsf{StrlFutDescsFrt}$ & 93,962 & 0.0000 & 161,139 & 0.8430 \\
+        $\mathsf{StrlFutDescs}$ & 81,861 & 0 & 161,283 & 0.8456 \\
+        $\mathsf{StrlFutDescsFrt}$ & 93,962 & 0 & 161,139 & 0.8430 \\
         $\mathsf{StrlAllDescs}$ & 81,927 & 0 & 161,917 & 0 \\
         $\mathsf{StrlAllDescsFrt}$ & 94,771 & 0 & 161,347 & 0 \\
         \hline
@@ -553,7 +574,8 @@ thought of as the fitness of the set of organisms who take said action.
 This methodology is based on the idea of dividing the species into
 so-called \emph{winners} and \emph{losers}. A \emph{winner} is an
 organism who is ancestor to all but finitely many future members of the species.
-A \emph{loser} is an organism whose descendants eventually go extinct.
+A \emph{loser} is an organism whose descendants in the species
+eventually go extinct.
 The \emph{fitness} of a set of organisms is simply the proportion of winners
 in that set.
 This methodology hinges on the theory introduced
@@ -567,7 +589,8 @@ things).
 
 We ran simulations to demonstrate this new methodology \emph{in silica}.
 The results agree with intuition, with one exception, namely that we found
-no fitness penalty associated with eating a certain food which causes the
+no (or very little)
+fitness penalty associated with eating a certain food which causes the
 eater to become shortsighted. We speculate that this reveals that shortsightedness
 is not particularly detrimental in the specific worlds we simulated:
 showing that these fitness results can reveal things to us which were
